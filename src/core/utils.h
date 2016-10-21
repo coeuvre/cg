@@ -2,6 +2,7 @@
 #define CG_CORE_UTILS_H
 
 #include <assert.h>
+#include <stdarg.h>
 
 #define ASSERT(expr) assert(expr)
 
@@ -21,9 +22,12 @@ typedef enum LogLevel {
 #define LOG_DEBUG(format, ...) cg_log(LogLevel_Debug, format, __VA_ARGS__)
 #define LOG_TRACE(format, ...) cg_log(LogLevel_Trace, format, __VA_ARGS__)
 
-#define LOG_DEF(name) void name(LogLevel level, char *format, ...)
-typedef LOG_DEF(LogFn);
+#define CG_LOG(name) void name(LogLevel level, char *format, ...)
+typedef CG_LOG(Log);
 
-extern LOG_DEF(cg_log);
+#define CG_VLOG(name) void name(LogLevel level, char *format, va_list args)
+typedef CG_VLOG(VLog);
+
+extern CG_LOG(cg_log);
 
 #endif

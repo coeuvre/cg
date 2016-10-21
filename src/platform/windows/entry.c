@@ -1,49 +1,50 @@
 #include "core/types.h"
 #include "core/utils.h"
+#include "core/string.h"
 #include "platform/platform.h"
 
 #include <stdio.h>
 #include <Windows.h>
 
+#include "platform/windows/utils.c"
+
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 
-void cg_log(LogLevel level, char *format, ...)
+typedef struct PlatformState {
+    char placeholder;
+} PlatformState;
+
+static void init_platform_state(PlatformState *state)
 {
-    (void)level;
-    va_list args;
-    va_start(args, format);
-
-    char buf[512];
-    _vsnprintf_s(buf, 512, 511, format, args);
-    buf[511] = 0;
-    OutputDebugString(buf);
-
-    va_end(args);
+    state->placeholder = 0;
 }
 
-// If the function succeeds, the return value is the length of the string that
-// is copied to the buffer, in characters, not including the terminating null
-// character. If the buffer is too small to hold the string, the string is
-// truncated to `size` characters including the terminating null character,
-// the function returns `size`
-static u32 get_executable_dir(char *buf, u32 size)
+typedef struct GameCode {
+    HMODULE dll;
+    FILETIME dll_last_write_time;
+
+    cgLoaded *loaded;
+    cgUpdate *update;
+
+    bool is_valid;
+} GameCode;
+
+static GameCode load_game_code(char *dll_filename, char *dll_temp_filename)
 {
-    u32 len = GetModuleFileName(NULL, buf, size);
-    if (len == size) {
-        // The buf is too small, we cannot get the entire path
-        return size;
-    } else {
-        // Change the last `\\` to `\0`
-        char *p = buf + len - 1;
-        while (p > buf && *p != 0) {
-            if (*p == '\\') {
-                *p = 0;
-                break;
-            }
-            --p;
-        }
-        return (u32)(p - buf);
+    GameCode game_code = {0};
+
+    game_code.dll_last_write_time = get_last_write_time(dll_filename);
+
+    CopyFile(dll_filename, dll_temp_filename, FALSE);
+    game_code.dll = LoadLibrary(dll_temp_filename);
+
+    if (game_code.dll) {
+        game_code.loaded = (cgLoaded *)GetProcAddress(game_code.dll, "cg_loaded");
+        game_code.update = (cgUpdate *)GetProcAddress(game_code.dll, "cg_update");
+        game_code.is_valid = game_code.update;
     }
+
+    return game_code;
 }
 
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -78,10 +79,71 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
     (void)cmd;
     (void)show;
 
-    PlatformApi platform = {
-        .log = cg_log,
+    LOG_INFO("usize: %d\n", sizeof(usize));
+    LOG_INFO("u64: %d\n", sizeof(u64));
+    LOG_INFO("u32: %d\n", sizeof(u32));
+    LOG_INFO("f64: %d\n", sizeof(f64));
+    LOG_INFO("f32: %d\n", sizeof(f32));
+
+    PlatformState state;
+    init_platform_state(&state);
+
+    PlatformApi api = {
+        .vlog = vlog,
     };
-    (void)platform;
+
+    char exectuable_dir[MAX_PATH];
+    usize exectuable_dir_size = get_executable_dir(exectuable_dir, ARRAY_COUNT(exectuable_dir));
+    LOG_INFO("Executable directory: %s\n", exectuable_dir);
+
+    char exectuable_name[MAX_PATH];
+    usize exectuable_name_size = get_executable_name(exectuable_name, ARRAY_COUNT(exectuable_name));
+
+    char dll_name[MAX_PATH];
+    usize dll_name_size = copy_str(dll_name, ARRAY_COUNT(dll_name), exectuable_name, exectuable_name_size);
+    {
+        char *p = find_str_right(dll_name, dll_name_size, '.');
+        if (p) {
+            char ext[] = ".dll";
+            dll_name_size = push_str(dll_name, ARRAY_COUNT(dll_name), p - dll_name,
+                                     ext, ARRAY_COUNT(ext));
+        } else {
+            ASSERT(!"Bad executable name");
+        }
+    }
+
+    char dll_fullpath[MAX_PATH];
+    concat_str(dll_fullpath, ARRAY_COUNT(dll_fullpath),
+               exectuable_dir, exectuable_dir_size, dll_name, dll_name_size);
+    LOG_INFO("DLL name: %s\n", dll_fullpath);
+
+    char dll_temp_name[512];
+    usize dll_temp_name_size = copy_str(dll_temp_name, ARRAY_COUNT(dll_temp_name),
+                                           exectuable_name, exectuable_name_size);
+    {
+        char *p = find_str_right(dll_temp_name, dll_temp_name_size, '.');
+        if (p) {
+            char ext[] = "_temp.dll";
+            dll_temp_name_size = push_str(dll_temp_name, ARRAY_COUNT(dll_temp_name),
+                                          p - dll_temp_name,
+                                          ext, ARRAY_COUNT(ext) - 1);
+        } else {
+            ASSERT(!"Bad executable name");
+        }
+    }
+
+    char dll_temp_fullpath[MAX_PATH];
+    concat_str(dll_temp_fullpath, ARRAY_COUNT(dll_temp_fullpath),
+               exectuable_dir, exectuable_dir_size, dll_temp_name, dll_temp_name_size);
+    LOG_INFO("DLL temp name: %s\n", dll_temp_fullpath);
+
+    GameCode game_code = load_game_code(dll_fullpath, dll_temp_fullpath);
+
+    if (game_code.is_valid) {
+        game_code.loaded(&api);
+    }
+
+    ASSERT(game_code.is_valid);
 
     WNDCLASSEX wc = {0};
     wc.cbSize = sizeof(WNDCLASSEX);
@@ -112,9 +174,10 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
 
     ShowWindow(hwnd, SW_SHOW);
 
-    char buf[512];
-    get_executable_dir(buf, ARRAY_COUNT(buf));
-    LOG_INFO("Executable Path: %s\n", buf);
+    f32 frame_time = 0.016667;
+    f32 elapsed_time = frame_time; // The first frame can start immediately
+    i64 last_counter = get_current_counter();
+    i64 current_counter = last_counter;
 
     for (;;) {
         bool running = true;
@@ -132,6 +195,36 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
 
         if (!running) {
             break;
+        }
+
+        current_counter = get_current_counter();
+        elapsed_time += get_seconds_elapsed(last_counter, current_counter);
+        last_counter = current_counter;
+        LOG_TRACE("Before frame, elapsed_time: %f\n", elapsed_time);
+
+        if (elapsed_time >= frame_time) {
+            i64 frame_start = get_current_counter();
+
+            if (game_code.is_valid) {
+                game_code.update(frame_time);
+            }
+
+            elapsed_time -= frame_time;
+
+            i64 frame_end = get_current_counter();
+            f32 frame_cost = get_seconds_elapsed(frame_start, frame_end);
+            LOG_TRACE("Frame cost: %f\n", frame_cost);
+        }
+
+        current_counter = get_current_counter();
+        elapsed_time += get_seconds_elapsed(last_counter, current_counter);
+        last_counter = current_counter;
+        LOG_TRACE("After frame, elapsed_time: %f\n", elapsed_time);
+
+        if (frame_time > elapsed_time) {
+            u32 remaining = (u32)((frame_time - elapsed_time) * 1000.0f);
+            LOG_TRACE("Sleep for %d ms\n", remaining);
+            Sleep(remaining);
         }
     }
 

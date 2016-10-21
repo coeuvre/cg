@@ -13,7 +13,13 @@
 #include "core/utils.h"
 
 typedef struct PlatformApi {
-    LogFn *log;
+    VLog *vlog;
 } PlatformApi;
+
+#define CG_LOADED(name) void name(PlatformApi *platform)
+typedef CG_LOADED(cgLoaded);
+
+#define CG_UPDATE(name) void name(f32 dt)
+typedef CG_UPDATE(cgUpdate);
 
 #endif
