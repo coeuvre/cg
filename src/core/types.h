@@ -21,4 +21,9 @@ typedef double f64;
 #define F32_MIN FLT_MIN
 #define F32_MAX FLT_MAX
 
+#define KB(x) ((x) * 1024LL)
+#define MB(x) (KB(x) * 1024LL)
+#define GB(x) (MB(x) * 1024LL)
+#define TB(x) (GB(x) * 1024LL)
+
 #endif

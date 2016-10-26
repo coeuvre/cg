@@ -12,11 +12,30 @@
 
 #include "core/utils.h"
 
+#define CG_ALLOC(name) void *name(usize size)
+typedef CG_ALLOC(cgAlloc);
+
+#define CG_FREE(name) void name(void *p, usize size)
+typedef CG_FREE(cgFree);
+
+typedef struct PlatformMemoryApi {
+    cgAlloc *alloc;
+    cgFree *free;
+} PlatformMemoryApi;
+
 typedef struct PlatformApi {
     VLog *vlog;
+    PlatformMemoryApi memory;
 } PlatformApi;
 
-#define CG_LOADED(name) void name(PlatformApi *platform)
+typedef struct PlatformState {
+    PlatformApi api;
+    void *data;
+} PlatformState;
+
+extern PlatformState *PLATFORM;
+
+#define CG_LOADED(name) void name(PlatformState *state)
 typedef CG_LOADED(cgLoaded);
 
 #define CG_UPDATE(name) void name(f32 dt)

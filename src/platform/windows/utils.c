@@ -17,6 +17,20 @@ CG_LOG(cg_log)
     va_end(args);
 }
 
+CG_ALLOC(cg_alloc)
+{
+    usize *p = VirtualAlloc(0, size + sizeof(usize), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    *p = size;
+    return p + 1;
+}
+
+CG_FREE(cg_free)
+{
+    usize *origin = (usize *)p - 1;
+    ASSERT(*origin == size);
+    VirtualFree(origin, 0, MEM_RELEASE);
+}
+
 static usize get_executable_dir(char *buf, usize size)
 {
     usize len = GetModuleFileName(NULL, buf, (DWORD)size);

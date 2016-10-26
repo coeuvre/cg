@@ -5,19 +5,11 @@
 
 #include <stdio.h>
 #include <Windows.h>
+#include <GL/GL.h>
 
 #include "platform/windows/utils.c"
 
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
-
-typedef struct PlatformState {
-    char placeholder;
-} PlatformState;
-
-static void init_platform_state(PlatformState *state)
-{
-    state->placeholder = 0;
-}
 
 typedef struct GameCode {
     HMODULE dll;
@@ -45,6 +37,15 @@ static GameCode load_game_code(char *dll_filename, char *dll_temp_filename)
     }
 
     return game_code;
+}
+
+static void unload_game_code(GameCode *game_code)
+{
+    if (game_code->dll) {
+        FreeLibrary(game_code->dll);
+    }
+
+    game_code->is_valid = false;
 }
 
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -85,11 +86,14 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
     LOG_INFO("f64: %d\n", sizeof(f64));
     LOG_INFO("f32: %d\n", sizeof(f32));
 
-    PlatformState state;
-    init_platform_state(&state);
-
-    PlatformApi api = {
-        .vlog = vlog,
+    PlatformState state = {
+        .api = {
+            .vlog = vlog,
+            .memory = {
+                .alloc = cg_alloc,
+                .free = cg_free,
+            },
+        }
     };
 
     char exectuable_dir[MAX_PATH];
@@ -137,17 +141,11 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
                exectuable_dir, exectuable_dir_size, dll_temp_name, dll_temp_name_size);
     LOG_INFO("DLL temp name: %s\n", dll_temp_fullpath);
 
-    GameCode game_code = load_game_code(dll_fullpath, dll_temp_fullpath);
-
-    if (game_code.is_valid) {
-        game_code.loaded(&api);
-    }
-
-    ASSERT(game_code.is_valid);
-
     WNDCLASSEX wc = {0};
     wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = 0;
+    // For OpenGL:
+    // When you create your HWND, you need to make sure that it has the CS_OWNDC set for its style.
+    wc.style = CS_OWNDC;
     wc.lpfnWndProc = window_proc;
     wc.hCursor = LoadCursor(0, IDC_ARROW);
     wc.hInstance = hinstance;
@@ -171,6 +169,62 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
         LOG_ERROR("Failed to create window.\n");
         return -1;
     }
+
+    HDC hdc = GetDC(hwnd);
+    PIXELFORMATDESCRIPTOR pfd = {
+        sizeof(PIXELFORMATDESCRIPTOR),
+        1,
+        //Flags
+        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+        //The kind of framebuffer. RGBA or palette.
+        PFD_TYPE_RGBA,
+        //Colordepth of the framebuffer.
+        32,
+        0, 0, 0, 0, 0, 0,
+        0,
+        0,
+        0,
+        0, 0, 0, 0,
+        //Number of bits for the depthbuffer
+        24,
+        //Number of bits for the stencilbuffer
+        8,
+        //Number of Aux buffers in the framebuffer.
+        0,
+        PFD_MAIN_PLANE,
+        0,
+        0, 0, 0
+    };
+    int pfi = ChoosePixelFormat(hdc, &pfd);
+    if (pfi == 0) {
+        LOG_ERROR("Failed to choose pixel format.\n");
+        return -1;
+    }
+
+    if (SetPixelFormat(hdc, pfi, &pfd) == FALSE) {
+        LOG_ERROR("Failed to set pixel format.\n");
+        return -1;
+    }
+
+    HGLRC hglrc = wglCreateContext(hdc);
+    if (hglrc == NULL) {
+        LOG_ERROR("Failed to create OpenGL context.\n");
+        return -1;
+    }
+
+    if (wglMakeCurrent(hdc, hglrc) == FALSE) {
+        LOG_ERROR("Failed to make current OpenGL context.\n");
+        return -1;
+    }
+
+    LOG_INFO("OpenGL Version: %s\n", glGetString(GL_VERSION));
+
+    GameCode game_code = load_game_code(dll_fullpath, dll_temp_fullpath);
+    if (game_code.is_valid) {
+        game_code.loaded(&state);
+    }
+
+    ASSERT(game_code.is_valid);
 
     ShowWindow(hwnd, SW_SHOW);
 
@@ -197,19 +251,28 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
             break;
         }
 
+        FILETIME new_dll_last_write_time = get_last_write_time(dll_fullpath);
+        if (CompareFileTime(&new_dll_last_write_time, &game_code.dll_last_write_time) != 0) {
+            unload_game_code(&game_code);
+            game_code = load_game_code(dll_fullpath, dll_temp_fullpath);
+            if (game_code.is_valid) {
+                game_code.loaded(&state);
+            }
+        }
+
         current_counter = get_current_counter();
         elapsed_time += get_seconds_elapsed(last_counter, current_counter);
         last_counter = current_counter;
         LOG_TRACE("Before frame, elapsed_time: %f\n", elapsed_time);
 
         if (elapsed_time >= frame_time) {
+            elapsed_time -= frame_time;
+
             i64 frame_start = get_current_counter();
 
             if (game_code.is_valid) {
                 game_code.update(frame_time);
             }
-
-            elapsed_time -= frame_time;
 
             i64 frame_end = get_current_counter();
             f32 frame_cost = get_seconds_elapsed(frame_start, frame_end);
