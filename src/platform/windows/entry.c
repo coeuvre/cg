@@ -274,6 +274,8 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
                 game_code.update(frame_time);
             }
 
+            SwapBuffers(hdc);
+
             i64 frame_end = get_current_counter();
             f32 frame_cost = get_seconds_elapsed(frame_start, frame_end);
             LOG_TRACE("Frame cost: %f\n", frame_cost);
