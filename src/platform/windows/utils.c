@@ -1,3 +1,7 @@
+#include <stdio.h>
+
+#include "utils.h"
+
 CG_VLOG(vlog)
 {
     (void)level;
@@ -31,7 +35,8 @@ CG_FREE(cg_free)
     VirtualFree(origin, 0, MEM_RELEASE);
 }
 
-static usize get_executable_dir(char *buf, usize size)
+usize
+get_executable_dir(char *buf, usize size)
 {
     usize len = GetModuleFileName(NULL, buf, (DWORD)size);
     if (len == size) {
@@ -51,7 +56,8 @@ static usize get_executable_dir(char *buf, usize size)
     }
 }
 
-static usize get_executable_name(char *buf, usize size)
+usize
+get_executable_name(char *buf, usize size)
 {
     usize len = GetModuleFileName(NULL, buf, (DWORD)size);
     if (len == size) {
@@ -72,36 +78,4 @@ static usize get_executable_name(char *buf, usize size)
             return len;
         }
     }
-}
-
-static inline FILETIME get_last_write_time(char *filename)
-{
-    FILETIME time = {0};
-
-    WIN32_FILE_ATTRIBUTE_DATA data;
-    if (GetFileAttributesEx(filename, GetFileExInfoStandard, &data)) {
-        time = data.ftLastWriteTime;
-    }
-
-    return time;
-}
-
-static inline i64 get_current_counter()
-{
-    LARGE_INTEGER counter;
-    QueryPerformanceCounter(&counter);
-    return counter.QuadPart;
-}
-
-static inline f32 get_seconds_elapsed(i64 start, i64 end)
-{
-    static i64 freq = 0;
-
-    if (freq == 0) {
-        LARGE_INTEGER f;
-        QueryPerformanceFrequency(&f);
-        freq = f.QuadPart;
-    }
-
-    return (f32)(end - start) / (f32)freq;
 }

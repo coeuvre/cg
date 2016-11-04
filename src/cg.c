@@ -17,12 +17,13 @@ CG_LOG(cg_log)
     va_end(args);
 }
 
+EXPORT
 CG_LOADED(cg_loaded)
 {
     PLATFORM = state;
 
     if (state->data == 0) {
-        usize size = GB(2);
+        usize size = MB(128);
         GameState *game_state = state->data = state->api.memory.alloc(size);
         game_state->size = size;
     }
@@ -30,6 +31,7 @@ CG_LOADED(cg_loaded)
     LOG_INFO("Game Loaded!\n");
 }
 
+EXPORT
 CG_UPDATE(cg_update)
 {
     LOG_INFO("dt: %f\n", dt);

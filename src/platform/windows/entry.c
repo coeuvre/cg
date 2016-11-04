@@ -3,11 +3,10 @@
 #include "core/string.h"
 #include "platform/platform.h"
 
-#include <stdio.h>
+#include "utils.h"
+
 #include <Windows.h>
 #include <GL/GL.h>
-
-#include "platform/windows/utils.c"
 
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 
@@ -21,7 +20,8 @@ typedef struct GameCode {
     bool is_valid;
 } GameCode;
 
-static GameCode load_game_code(char *dll_filename, char *dll_temp_filename)
+static GameCode
+load_game_code(char *dll_filename, char *dll_temp_filename)
 {
     GameCode game_code = {0};
 
@@ -39,7 +39,8 @@ static GameCode load_game_code(char *dll_filename, char *dll_temp_filename)
     return game_code;
 }
 
-static void unload_game_code(GameCode *game_code)
+static void
+unload_game_code(GameCode *game_code)
 {
     if (game_code->dll) {
         FreeLibrary(game_code->dll);
@@ -48,7 +49,8 @@ static void unload_game_code(GameCode *game_code)
     game_code->is_valid = false;
 }
 
-static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+static LRESULT CALLBACK
+window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg) {
         case WM_KEYDOWN: {
@@ -74,7 +76,8 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     return 0;
 }
 
-int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
+int CALLBACK
+WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
 {
     (void)prev_hinstance;
     (void)cmd;
@@ -228,7 +231,7 @@ int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, i
 
     ShowWindow(hwnd, SW_SHOW);
 
-    f32 frame_time = 0.016667;
+    f32 frame_time = 0.016667f;
     f32 elapsed_time = frame_time; // The first frame can start immediately
     i64 last_counter = get_current_counter();
     i64 current_counter = last_counter;
