@@ -26,6 +26,10 @@ typedef double f64;
 #define GB(x) (MB(x) * 1024LL)
 #define TB(x) (GB(x) * 1024LL)
 
+#ifdef WINDOWS
 #define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
 
 #endif

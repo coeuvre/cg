@@ -1,6 +1,4 @@
-#include "core/types.h"
-#include "core/utils.h"
-#include "core/string.h"
+#include "core/core.h"
 #include "platform/platform.h"
 
 #include "utils.h"
@@ -62,12 +60,12 @@ window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
         case WM_CLOSE: {
             PostQuitMessage(0);
-            LOG_TRACE("WM_CLOSE\n");
+            trace("WM_CLOSE\n");
         } break;
 
         case WM_DESTROY: {
-            LOG_TRACE("WM_DESTROY\n");
-            ASSERT(false);
+            trace("WM_DESTROY\n");
+            assert(false);
         }
 
         default: return DefWindowProc(hwnd, msg, wparam, lparam);
@@ -83,11 +81,11 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     (void)cmd;
     (void)show;
 
-    LOG_INFO("usize: %d\n", sizeof(usize));
-    LOG_INFO("u64: %d\n", sizeof(u64));
-    LOG_INFO("u32: %d\n", sizeof(u32));
-    LOG_INFO("f64: %d\n", sizeof(f64));
-    LOG_INFO("f32: %d\n", sizeof(f32));
+    info("usize: %d\n", sizeof(usize));
+    info("u64: %d\n", sizeof(u64));
+    info("u32: %d\n", sizeof(u32));
+    info("f64: %d\n", sizeof(f64));
+    info("f32: %d\n", sizeof(f32));
 
     PlatformState state = {
         .api = {
@@ -100,49 +98,49 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     };
 
     char exectuable_dir[MAX_PATH];
-    usize exectuable_dir_size = get_executable_dir(exectuable_dir, ARRAY_COUNT(exectuable_dir));
-    LOG_INFO("Executable directory: %s\n", exectuable_dir);
+    usize exectuable_dir_size = get_executable_dir(exectuable_dir, array_count(exectuable_dir));
+    info("Executable directory: %s\n", exectuable_dir);
 
     char exectuable_name[MAX_PATH];
-    usize exectuable_name_size = get_executable_name(exectuable_name, ARRAY_COUNT(exectuable_name));
+    usize exectuable_name_size = get_executable_name(exectuable_name, array_count(exectuable_name));
 
     char dll_name[MAX_PATH];
-    usize dll_name_size = copy_str(dll_name, ARRAY_COUNT(dll_name), exectuable_name, exectuable_name_size);
+    usize dll_name_size = copy_str(dll_name, array_count(dll_name), exectuable_name, exectuable_name_size);
     {
         char *p = find_str_right(dll_name, dll_name_size, '.');
         if (p) {
             char ext[] = ".dll";
-            dll_name_size = push_str(dll_name, ARRAY_COUNT(dll_name), p - dll_name,
-                                     ext, ARRAY_COUNT(ext));
+            dll_name_size = push_str(dll_name, array_count(dll_name), p - dll_name,
+                                     ext, array_count(ext));
         } else {
-            ASSERT(!"Bad executable name");
+            assert(!"Bad executable name");
         }
     }
 
     char dll_fullpath[MAX_PATH];
-    concat_str(dll_fullpath, ARRAY_COUNT(dll_fullpath),
+    concat_str(dll_fullpath, array_count(dll_fullpath),
                exectuable_dir, exectuable_dir_size, dll_name, dll_name_size);
-    LOG_INFO("DLL name: %s\n", dll_fullpath);
+    info("DLL name: %s\n", dll_fullpath);
 
     char dll_temp_name[512];
-    usize dll_temp_name_size = copy_str(dll_temp_name, ARRAY_COUNT(dll_temp_name),
+    usize dll_temp_name_size = copy_str(dll_temp_name, array_count(dll_temp_name),
                                            exectuable_name, exectuable_name_size);
     {
         char *p = find_str_right(dll_temp_name, dll_temp_name_size, '.');
         if (p) {
             char ext[] = "_temp.dll";
-            dll_temp_name_size = push_str(dll_temp_name, ARRAY_COUNT(dll_temp_name),
+            dll_temp_name_size = push_str(dll_temp_name, array_count(dll_temp_name),
                                           p - dll_temp_name,
-                                          ext, ARRAY_COUNT(ext) - 1);
+                                          ext, array_count(ext) - 1);
         } else {
-            ASSERT(!"Bad executable name");
+            assert(!"Bad executable name");
         }
     }
 
     char dll_temp_fullpath[MAX_PATH];
-    concat_str(dll_temp_fullpath, ARRAY_COUNT(dll_temp_fullpath),
+    concat_str(dll_temp_fullpath, array_count(dll_temp_fullpath),
                exectuable_dir, exectuable_dir_size, dll_temp_name, dll_temp_name_size);
-    LOG_INFO("DLL temp name: %s\n", dll_temp_fullpath);
+    info("DLL temp name: %s\n", dll_temp_fullpath);
 
     WNDCLASSEX wc = {0};
     wc.cbSize = sizeof(WNDCLASSEX);
@@ -155,7 +153,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     wc.lpszClassName = WINDOW_CLASS_NAME;
 
     if (RegisterClassEx(&wc) == 0) {
-        LOG_ERROR("Failed to register window class.\n");
+        error("Failed to register window class.\n");
         return -1;
     }
 
@@ -169,7 +167,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
                                NULL);
 
     if (hwnd == 0) {
-        LOG_ERROR("Failed to create window.\n");
+        error("Failed to create window.\n");
         return -1;
     }
 
@@ -200,34 +198,34 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     };
     int pfi = ChoosePixelFormat(hdc, &pfd);
     if (pfi == 0) {
-        LOG_ERROR("Failed to choose pixel format.\n");
+        error("Failed to choose pixel format.\n");
         return -1;
     }
 
     if (SetPixelFormat(hdc, pfi, &pfd) == FALSE) {
-        LOG_ERROR("Failed to set pixel format.\n");
+        error("Failed to set pixel format.\n");
         return -1;
     }
 
     HGLRC hglrc = wglCreateContext(hdc);
     if (hglrc == NULL) {
-        LOG_ERROR("Failed to create OpenGL context.\n");
+        error("Failed to create OpenGL context.\n");
         return -1;
     }
 
     if (wglMakeCurrent(hdc, hglrc) == FALSE) {
-        LOG_ERROR("Failed to make current OpenGL context.\n");
+        error("Failed to make current OpenGL context.\n");
         return -1;
     }
 
-    LOG_INFO("OpenGL Version: %s\n", glGetString(GL_VERSION));
+    info("OpenGL Version: %s\n", glGetString(GL_VERSION));
 
     GameCode game_code = load_game_code(dll_fullpath, dll_temp_fullpath);
     if (game_code.is_valid) {
         game_code.loaded(&state);
     }
 
-    ASSERT(game_code.is_valid);
+    assert(game_code.is_valid);
 
     ShowWindow(hwnd, SW_SHOW);
 
@@ -266,7 +264,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
         current_counter = get_current_counter();
         elapsed_time += get_seconds_elapsed(last_counter, current_counter);
         last_counter = current_counter;
-        LOG_TRACE("Before frame, elapsed_time: %f\n", elapsed_time);
+        trace("Before frame, elapsed_time: %f\n", elapsed_time);
 
         if (elapsed_time >= frame_time) {
             elapsed_time -= frame_time;
@@ -281,17 +279,17 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
 
             i64 frame_end = get_current_counter();
             f32 frame_cost = get_seconds_elapsed(frame_start, frame_end);
-            LOG_TRACE("Frame cost: %f\n", frame_cost);
+            trace("Frame cost: %f\n", frame_cost);
         }
 
         current_counter = get_current_counter();
         elapsed_time += get_seconds_elapsed(last_counter, current_counter);
         last_counter = current_counter;
-        LOG_TRACE("After frame, elapsed_time: %f\n", elapsed_time);
+        trace("After frame, elapsed_time: %f\n", elapsed_time);
 
         if (frame_time > elapsed_time) {
             u32 remaining = (u32)((frame_time - elapsed_time) * 1000.0f);
-            LOG_TRACE("Sleep for %d ms\n", remaining);
+            trace("Sleep for %d ms\n", remaining);
             Sleep(remaining);
         }
     }

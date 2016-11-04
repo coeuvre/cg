@@ -45,7 +45,7 @@ static inline usize concat_str(char *dst, usize dst_size, char *src1, usize src1
 {
     usize size = copy_str(dst, dst_size, src1, src1_size);
     if (size == src1_size) {
-        ASSERT(dst_size >= size);
+        assert(dst_size >= size);
         size += copy_str(dst + size, dst_size - size, src2, src2_size);
     }
     return size;

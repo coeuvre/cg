@@ -43,7 +43,7 @@ get_seconds_elapsed(i64 start, i64 end)
     return (f32)(end - start) / (f32)freq;
 }
 
-CG_VLOG(vlog);
+VLOG(vlog);
 CG_ALLOC(cg_alloc);
 CG_FREE(cg_free);
 

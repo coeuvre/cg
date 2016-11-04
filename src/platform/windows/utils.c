@@ -2,7 +2,7 @@
 
 #include "utils.h"
 
-CG_VLOG(vlog)
+VLOG(vlog)
 {
     (void)level;
 
@@ -12,7 +12,7 @@ CG_VLOG(vlog)
     OutputDebugString(buf);
 }
 
-CG_LOG(cg_log)
+LOG(log)
 {
     (void)level;
     va_list args;
@@ -31,7 +31,7 @@ CG_ALLOC(cg_alloc)
 CG_FREE(cg_free)
 {
     usize *origin = (usize *)p - 1;
-    ASSERT(*origin == size);
+    assert(*origin == size);
     VirtualFree(origin, 0, MEM_RELEASE);
 }
 
@@ -40,7 +40,7 @@ get_executable_dir(char *buf, usize size)
 {
     usize len = GetModuleFileName(NULL, buf, (DWORD)size);
     if (len == size) {
-        ASSERT(!"Buffer is too small");
+        assert(!"Buffer is too small");
         return size;
     } else {
         // Change the char after last `\\` to `\0`
@@ -50,7 +50,7 @@ get_executable_dir(char *buf, usize size)
             *p = 0;
             return p - buf;
         } else {
-            ASSERT(!"Bad Executable Path");
+            assert(!"Bad Executable Path");
             return len;
         }
     }
@@ -61,7 +61,7 @@ get_executable_name(char *buf, usize size)
 {
     usize len = GetModuleFileName(NULL, buf, (DWORD)size);
     if (len == size) {
-        ASSERT(!"Buffer is too small");
+        assert(!"Buffer is too small");
         return size;
     } else {
         char *p = find_str_right(buf, len, '\\');
@@ -74,7 +74,7 @@ get_executable_name(char *buf, usize size)
             *dst = 0;
             return dst - buf;
         } else {
-            ASSERT(!"Bad Executable Path");
+            assert(!"Bad Executable Path");
             return len;
         }
     }

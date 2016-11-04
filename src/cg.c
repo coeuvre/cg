@@ -1,6 +1,4 @@
-#include "core/types.h"
-#include "core/string.h"
-#include "core/utils.h"
+#include "core/core.h"
 #include "platform/platform.h"
 
 PlatformState *PLATFORM;
@@ -9,7 +7,7 @@ typedef struct GameState {
     usize size;
 } GameState;
 
-CG_LOG(cg_log)
+LOG(log)
 {
     va_list args;
     va_start(args, format);
@@ -28,13 +26,13 @@ CG_LOADED(cg_loaded)
         game_state->size = size;
     }
 
-    LOG_INFO("Game Loaded!\n");
+    info("Game Loaded!\n");
 }
 
 EXPORT
 CG_UPDATE(cg_update)
 {
-    LOG_INFO("dt: %f\n", dt);
+    info("dt: %f\n", dt);
 
     GameState *state = PLATFORM->data;
 }

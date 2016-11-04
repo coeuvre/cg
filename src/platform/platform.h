@@ -10,7 +10,7 @@
 //   * File I/O
 //   * Memory Management
 
-#include "core/utils.h"
+#include "core/core.h"
 
 #define CG_ALLOC(name) void *name(usize size)
 typedef CG_ALLOC(cgAlloc);
