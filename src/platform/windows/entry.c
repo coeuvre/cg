@@ -52,7 +52,7 @@ window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
     switch (msg) {
         case WM_KEYDOWN: {
-            i32 key = (i32)wparam;
+            int32_t key = (int32_t)wparam;
             if (key == VK_ESCAPE) {
                 PostQuitMessage(0);
             }
@@ -60,11 +60,11 @@ window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
         case WM_CLOSE: {
             PostQuitMessage(0);
-            trace("WM_CLOSE\n");
+            cg_trace("WM_CLOSE\n");
         } break;
 
         case WM_DESTROY: {
-            trace("WM_DESTROY\n");
+            cg_trace("WM_DESTROY\n");
             assert(false);
         }
 
@@ -81,15 +81,15 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     (void)cmd;
     (void)show;
 
-    info("usize: %d\n", sizeof(usize));
-    info("u64: %d\n", sizeof(u64));
-    info("u32: %d\n", sizeof(u32));
-    info("f64: %d\n", sizeof(f64));
-    info("f32: %d\n", sizeof(f32));
+    cg_info("size_t: %d\n", sizeof(size_t));
+    cg_info("uint64_t: %d\n", sizeof(uint64_t));
+    cg_info("uint32_t: %d\n", sizeof(uint32_t));
+    cg_info("double: %d\n", sizeof(double));
+    cg_info("float: %d\n", sizeof(float));
 
-    PlatformState state = {
+    cgPlatformState state = {
         .api = {
-            .vlog = vlog,
+            .vlog = cg_vlog,
             .memory = {
                 .alloc = cg_alloc,
                 .free = cg_free,
@@ -98,49 +98,49 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     };
 
     char exectuable_dir[MAX_PATH];
-    usize exectuable_dir_size = get_executable_dir(exectuable_dir, array_count(exectuable_dir));
-    info("Executable directory: %s\n", exectuable_dir);
+    size_t exectuable_dir_size = get_executable_dir(exectuable_dir, cg_array_count(exectuable_dir));
+    cg_info("Executable directory: %s\n", exectuable_dir);
 
     char exectuable_name[MAX_PATH];
-    usize exectuable_name_size = get_executable_name(exectuable_name, array_count(exectuable_name));
+    size_t exectuable_name_size = get_executable_name(exectuable_name, cg_array_count(exectuable_name));
 
     char dll_name[MAX_PATH];
-    usize dll_name_size = copy_str(dll_name, array_count(dll_name), exectuable_name, exectuable_name_size);
+    size_t dll_name_size = cg_str_copy(dll_name, cg_array_count(dll_name), exectuable_name, exectuable_name_size);
     {
-        char *p = find_str_right(dll_name, dll_name_size, '.');
+        char *p = cg_str_rfind(dll_name, dll_name_size, '.');
         if (p) {
             char ext[] = ".dll";
-            dll_name_size = push_str(dll_name, array_count(dll_name), p - dll_name,
-                                     ext, array_count(ext));
+            dll_name_size = cg_str_push(dll_name, cg_array_count(dll_name), p - dll_name,
+                                        ext, cg_array_count(ext));
         } else {
             assert(!"Bad executable name");
         }
     }
 
     char dll_fullpath[MAX_PATH];
-    concat_str(dll_fullpath, array_count(dll_fullpath),
-               exectuable_dir, exectuable_dir_size, dll_name, dll_name_size);
-    info("DLL name: %s\n", dll_fullpath);
+    cg_str_concat(dll_fullpath, cg_array_count(dll_fullpath),
+                  exectuable_dir, exectuable_dir_size, dll_name, dll_name_size);
+    cg_info("DLL name: %s\n", dll_fullpath);
 
     char dll_temp_name[512];
-    usize dll_temp_name_size = copy_str(dll_temp_name, array_count(dll_temp_name),
-                                           exectuable_name, exectuable_name_size);
+    size_t dll_temp_name_size = cg_str_copy(dll_temp_name, cg_array_count(dll_temp_name),
+                                            exectuable_name, exectuable_name_size);
     {
-        char *p = find_str_right(dll_temp_name, dll_temp_name_size, '.');
+        char *p = cg_str_rfind(dll_temp_name, dll_temp_name_size, '.');
         if (p) {
             char ext[] = "_temp.dll";
-            dll_temp_name_size = push_str(dll_temp_name, array_count(dll_temp_name),
-                                          p - dll_temp_name,
-                                          ext, array_count(ext) - 1);
+            dll_temp_name_size = cg_str_push(dll_temp_name, cg_array_count(dll_temp_name),
+                                             p - dll_temp_name,
+                                             ext, cg_array_count(ext) - 1);
         } else {
             assert(!"Bad executable name");
         }
     }
 
     char dll_temp_fullpath[MAX_PATH];
-    concat_str(dll_temp_fullpath, array_count(dll_temp_fullpath),
-               exectuable_dir, exectuable_dir_size, dll_temp_name, dll_temp_name_size);
-    info("DLL temp name: %s\n", dll_temp_fullpath);
+    cg_str_concat(dll_temp_fullpath, cg_array_count(dll_temp_fullpath),
+                  exectuable_dir, exectuable_dir_size, dll_temp_name, dll_temp_name_size);
+    cg_info("DLL temp name: %s\n", dll_temp_fullpath);
 
     WNDCLASSEX wc = {0};
     wc.cbSize = sizeof(WNDCLASSEX);
@@ -153,7 +153,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     wc.lpszClassName = WINDOW_CLASS_NAME;
 
     if (RegisterClassEx(&wc) == 0) {
-        error("Failed to register window class.\n");
+        cg_error("Failed to register window class.\n");
         return -1;
     }
 
@@ -167,7 +167,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
                                NULL);
 
     if (hwnd == 0) {
-        error("Failed to create window.\n");
+        cg_error("Failed to create window.\n");
         return -1;
     }
 
@@ -198,27 +198,27 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     };
     int pfi = ChoosePixelFormat(hdc, &pfd);
     if (pfi == 0) {
-        error("Failed to choose pixel format.\n");
+        cg_error("Failed to choose pixel format.\n");
         return -1;
     }
 
     if (SetPixelFormat(hdc, pfi, &pfd) == FALSE) {
-        error("Failed to set pixel format.\n");
+        cg_error("Failed to set pixel format.\n");
         return -1;
     }
 
     HGLRC hglrc = wglCreateContext(hdc);
     if (hglrc == NULL) {
-        error("Failed to create OpenGL context.\n");
+        cg_error("Failed to create OpenGL context.\n");
         return -1;
     }
 
     if (wglMakeCurrent(hdc, hglrc) == FALSE) {
-        error("Failed to make current OpenGL context.\n");
+        cg_error("Failed to make current OpenGL context.\n");
         return -1;
     }
 
-    info("OpenGL Version: %s\n", glGetString(GL_VERSION));
+    cg_info("OpenGL Version: %s\n", glGetString(GL_VERSION));
 
     GameCode game_code = load_game_code(dll_fullpath, dll_temp_fullpath);
     if (game_code.is_valid) {
@@ -229,10 +229,10 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
 
     ShowWindow(hwnd, SW_SHOW);
 
-    f32 frame_time = 0.016667f;
-    f32 elapsed_time = frame_time; // The first frame can start immediately
-    i64 last_counter = get_current_counter();
-    i64 current_counter = last_counter;
+    float frame_time = 0.016667f;
+    float elapsed_time = frame_time; // The first frame can start immediately
+    int64_t last_counter = get_current_counter();
+    int64_t current_counter = last_counter;
 
     for (;;) {
         bool running = true;
@@ -264,12 +264,12 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
         current_counter = get_current_counter();
         elapsed_time += get_seconds_elapsed(last_counter, current_counter);
         last_counter = current_counter;
-        trace("Before frame, elapsed_time: %f\n", elapsed_time);
+        cg_trace("Before frame, elapsed_time: %f\n", elapsed_time);
 
         if (elapsed_time >= frame_time) {
             elapsed_time -= frame_time;
 
-            i64 frame_start = get_current_counter();
+            int64_t frame_start = get_current_counter();
 
             if (game_code.is_valid) {
                 game_code.update(frame_time);
@@ -277,19 +277,19 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
 
             SwapBuffers(hdc);
 
-            i64 frame_end = get_current_counter();
-            f32 frame_cost = get_seconds_elapsed(frame_start, frame_end);
-            trace("Frame cost: %f\n", frame_cost);
+            int64_t frame_end = get_current_counter();
+            float frame_cost = get_seconds_elapsed(frame_start, frame_end);
+            cg_trace("Frame cost: %f\n", frame_cost);
         }
 
         current_counter = get_current_counter();
         elapsed_time += get_seconds_elapsed(last_counter, current_counter);
         last_counter = current_counter;
-        trace("After frame, elapsed_time: %f\n", elapsed_time);
+        cg_trace("After frame, elapsed_time: %f\n", elapsed_time);
 
         if (frame_time > elapsed_time) {
-            u32 remaining = (u32)((frame_time - elapsed_time) * 1000.0f);
-            trace("Sleep for %d ms\n", remaining);
+            uint32_t remaining = (uint32_t)((frame_time - elapsed_time) * 1000.0f);
+            cg_trace("Sleep for %d ms\n", remaining);
             Sleep(remaining);
         }
     }

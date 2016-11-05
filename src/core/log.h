@@ -3,26 +3,26 @@
 
 #include <stdarg.h>
 
-typedef enum LogLevel {
-    LogLevel_Error,
-    LogLevel_Warn,
-    LogLevel_Info,
-    LogLevel_Debug,
-    LogLevel_Trace,
-} LogLevel;
+typedef enum cgLogLevel {
+    cgLogLevel_Error,
+    cgLogLevel_Warn,
+    cgLogLevel_Info,
+    cgLogLevel_Debug,
+    cgLogLevel_Trace,
+} cgLogLevel;
 
-#define error(format, ...) log(LogLevel_Error, format, __VA_ARGS__)
-#define warn(format, ...) log(LogLevel_Warn, format, __VA_ARGS__)
-#define info(format, ...) log(LogLevel_Info, format, __VA_ARGS__)
-#define debug(format, ...) log(LogLevel_Debug, format, __VA_ARGS__)
-#define trace(format, ...) log(LogLevel_Trace, format, __VA_ARGS__)
+#define cg_error(format, ...) cg_log(cgLogLevel_Error, format, __VA_ARGS__)
+#define cg_warn(format, ...) cg_log(cgLogLevel_Warn, format, __VA_ARGS__)
+#define cg_info(format, ...) cg_log(cgLogLevel_Info, format, __VA_ARGS__)
+#define cg_debug(format, ...) cg_log(cgLogLevel_Debug, format, __VA_ARGS__)
+#define cg_trace(format, ...) cg_log(cgLogLevel_Trace, format, __VA_ARGS__)
 
-#define LOG(name) void name(LogLevel level, char *format, ...)
-typedef LOG(Log);
+#define CG_LOG(name) void name(cgLogLevel level, char *format, ...)
+typedef CG_LOG(cgLog);
 
-#define VLOG(name) void name(LogLevel level, char *format, va_list args)
-typedef VLOG(VLog);
+#define CG_VLOG(name) void name(cgLogLevel level, char *format, va_list args)
+typedef CG_VLOG(cgVLog);
 
-extern LOG(log);
+extern CG_LOG(cg_log);
 
 #endif // CG_CORE_LOG_H

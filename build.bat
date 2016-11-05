@@ -1,19 +1,15 @@
 @echo off
 
-if "%1" == "clean" goto :clean
+if not exist %~dp0build goto generate
 
-if exist %~dp0build goto build
+:Debug
+cmake %~dp0build
+cmake --build %~dp0build --config Debug
+goto :eof
 
+:generate
 mkdir build
 pushd %~dp0build
 cmake -G "Visual Studio 14 Win64" ..
 popd
-
-:build
-cmake --build build
-goto :eof
-
-:clean
-if exist %~dp0build rmdir %~dp0build /s/q
-goto :eof
-
+goto :Debug

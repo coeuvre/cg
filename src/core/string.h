@@ -7,7 +7,7 @@
 //
 // Return a pointer to the first occurrence of `ch` in `str`.
 // If the `ch` is not found, return NULL
-static inline char *find_str_right(char *str, usize size, char ch)
+static inline char *cg_str_rfind(char *str, size_t size, char ch)
 {
     char *p = str + size - 1;
     while (p >= str) {
@@ -22,9 +22,9 @@ static inline char *find_str_right(char *str, usize size, char ch)
 // Copy string from `src` into `dst` with NULL terminated.
 //
 // Return the number of characters copied (not including the terminating NULL character).
-static inline usize copy_str(char *dst, usize dst_size, char *src, usize src_size)
+static inline size_t cg_str_copy(char *dst, size_t dst_size, char *src, size_t src_size)
 {
-    usize copied = 0;
+    size_t copied = 0;
     while (dst_size > 0 && src_size > 0) {
         *dst++ = *src++;
         --dst_size;
@@ -41,12 +41,12 @@ static inline usize copy_str(char *dst, usize dst_size, char *src, usize src_siz
     return copied;
 }
 
-static inline usize concat_str(char *dst, usize dst_size, char *src1, usize src1_size, char *src2, usize src2_size)
+static inline size_t cg_str_concat(char *dst, size_t dst_size, char *src1, size_t src1_size, char *src2, size_t src2_size)
 {
-    usize size = copy_str(dst, dst_size, src1, src1_size);
+    size_t size = cg_str_copy(dst, dst_size, src1, src1_size);
     if (size == src1_size) {
         assert(dst_size >= size);
-        size += copy_str(dst + size, dst_size - size, src2, src2_size);
+        size += cg_str_copy(dst + size, dst_size - size, src2, src2_size);
     }
     return size;
 }
@@ -54,11 +54,11 @@ static inline usize concat_str(char *dst, usize dst_size, char *src1, usize src1
 // Push `src` into `dst` at offset `at`.
 //
 // Return the length of result string.
-static inline usize push_str(char *dst, usize dst_size, usize at, char *src, usize src_size)
+static inline size_t cg_str_push(char *dst, size_t dst_size, size_t at, char *src, size_t src_size)
 {
-    usize size = at;
+    size_t size = at;
     if (at < dst_size) {
-        size += copy_str(dst + at, dst_size - at, src, src_size);
+        size += cg_str_copy(dst + at, dst_size - at, src, src_size);
     } else {
         size = dst_size;
     }

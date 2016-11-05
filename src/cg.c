@@ -1,38 +1,36 @@
 #include "core/core.h"
 #include "platform/platform.h"
 
-PlatformState *PLATFORM;
+cgPlatformState *CG_PLATFORM;
 
 typedef struct GameState {
-    usize size;
+    size_t size;
 } GameState;
 
-LOG(log)
+CG_LOG(cg_log)
 {
     va_list args;
     va_start(args, format);
-    PLATFORM->api.vlog(level, format, args);
+    CG_PLATFORM->api.vlog(level, format, args);
     va_end(args);
 }
 
-EXPORT
-CG_LOADED(cg_loaded)
+CG_EXPORT CG_LOADED(cg_loaded)
 {
-    PLATFORM = state;
+    CG_PLATFORM = state;
 
     if (state->data == 0) {
-        usize size = MB(128);
+        size_t size = cg_size_mb(128);
         GameState *game_state = state->data = state->api.memory.alloc(size);
         game_state->size = size;
     }
 
-    info("Game Loaded!\n");
+    cg_info("Game Loaded!\n");
 }
 
-EXPORT
-CG_UPDATE(cg_update)
+CG_EXPORT CG_UPDATE(cg_update)
 {
-    info("dt: %f\n", dt);
+    cg_info("dt: %f\n", dt);
 
-    GameState *state = PLATFORM->data;
+    GameState *state = CG_PLATFORM->data;
 }

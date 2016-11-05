@@ -21,7 +21,7 @@ get_last_write_time(char *filename)
     return time;
 }
 
-static inline i64
+static inline int64_t
 get_current_counter()
 {
     LARGE_INTEGER counter;
@@ -29,10 +29,10 @@ get_current_counter()
     return counter.QuadPart;
 }
 
-static inline f32
-get_seconds_elapsed(i64 start, i64 end)
+static inline float
+get_seconds_elapsed(int64_t start, int64_t end)
 {
-    static i64 freq = 0;
+    static int64_t freq = 0;
 
     if (freq == 0) {
         LARGE_INTEGER f;
@@ -40,14 +40,14 @@ get_seconds_elapsed(i64 start, i64 end)
         freq = f.QuadPart;
     }
 
-    return (f32)(end - start) / (f32)freq;
+    return (float)(end - start) / (float)freq;
 }
 
-VLOG(vlog);
+CG_VLOG(cg_vlog);
 CG_ALLOC(cg_alloc);
 CG_FREE(cg_free);
 
-usize get_executable_dir(char *buf, usize size);
-usize get_executable_name(char *buf, usize size);
+size_t get_executable_dir(char *buf, size_t size);
+size_t get_executable_name(char *buf, size_t size);
 
 #endif // CG_PLATFORM_WINDOW_UTILS_H
