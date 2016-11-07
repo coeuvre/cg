@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#ifdef WINDOWS
+#ifdef CG_PLATFORM_WINDOWS
 #define CG_EXPORT __declspec(dllexport)
 #else
 #define CG_EXPORT

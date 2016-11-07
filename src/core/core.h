@@ -2,7 +2,7 @@
 #define CG_CORE_H
 
 #ifdef _WIN32
-#define WINDOWS
+#define CG_PLATFORM_WINDOWS
 #else
 #error Unsuporrted platform
 #endif

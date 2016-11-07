@@ -16,7 +16,7 @@ static inline char *cg_str_rfind(char *str, size_t size, char ch)
         }
         --p;
     }
-    return NULL;
+    return 0;
 }
 
 // Copy string from `src` into `dst` with NULL terminated.
