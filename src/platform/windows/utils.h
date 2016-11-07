@@ -1,9 +1,7 @@
 #ifndef CG_PLATFORM_WINDOW_UTILS_H
 #define CG_PLATFORM_WINDOW_UTILS_H
 
-#include "core/types.h"
-#include "core/utils.h"
-#include "core/string.h"
+#include "core.h"
 #include "platform/platform.h"
 
 #include <Windows.h>

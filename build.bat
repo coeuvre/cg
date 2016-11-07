@@ -3,7 +3,6 @@
 if not exist %~dp0build goto generate
 
 :Debug
-cmake %~dp0build
 cmake --build %~dp0build --config Debug
 goto :eof
 

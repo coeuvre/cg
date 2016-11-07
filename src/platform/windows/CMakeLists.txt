@@ -1,3 +1,4 @@
+include_directories(${cg_SOURCE_DIR}/include/cg)
 include_directories(${cg_SOURCE_DIR}/src)
 
 set(cg_windows_SOURCES
@@ -6,5 +7,5 @@ set(cg_windows_SOURCES
 
 add_executable(cg_windows WIN32 ${cg_windows_SOURCES})
 set_target_properties(cg_windows
-    PROPERTIES OUTPUT_NAME cg)
+                      PROPERTIES OUTPUT_NAME cg)
 target_link_libraries(cg_windows opengl32)

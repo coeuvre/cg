@@ -10,7 +10,7 @@
 //   * File I/O
 //   * Memory Management
 
-#include "core/core.h"
+#include "core.h"
 
 #define CG_ALLOC(name) void *name(size_t size)
 typedef CG_ALLOC(cgAlloc);
@@ -41,4 +41,4 @@ typedef CG_LOADED(cgLoaded);
 #define CG_UPDATE(name) void name(float dt)
 typedef CG_UPDATE(cgUpdate);
 
-#endif
+#endif // CG_PLATFORM_H

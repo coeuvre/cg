@@ -1,4 +1,4 @@
-#include "core/core.h"
+#include "core.h"
 #include "platform/platform.h"
 
 #include "utils.h"

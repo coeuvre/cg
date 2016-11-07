@@ -1,7 +1,7 @@
-#include "core/core.h"
+#include "core.h"
 #include "platform/platform.h"
 
-cgPlatformState *CG_PLATFORM;
+cgPlatformState *CG_PLATFORM_STATE;
 
 typedef struct GameState {
     size_t size;
@@ -11,13 +11,13 @@ CG_LOG(cg_log)
 {
     va_list args;
     va_start(args, format);
-    CG_PLATFORM->api.vlog(level, format, args);
+    CG_PLATFORM_STATE->api.vlog(level, format, args);
     va_end(args);
 }
 
 CG_EXPORT CG_LOADED(cg_loaded)
 {
-    CG_PLATFORM = state;
+    CG_PLATFORM_STATE = state;
 
     if (state->data == 0) {
         size_t size = cg_size_mb(128);
@@ -32,5 +32,5 @@ CG_EXPORT CG_UPDATE(cg_update)
 {
     cg_info("dt: %f\n", dt);
 
-    GameState *state = CG_PLATFORM->data;
+    GameState *state = CG_PLATFORM_STATE->data;
 }
