@@ -1,14 +1,16 @@
+/// \file
+///
+/// Platform does:
+///   * OpenGL Context Creation
+///   * Hot reload game code
+///
+/// Platform provides:
+///   * Logging
+///   * File I/O
+///   * Memory Management
+
 #ifndef CG_PLATFORM_H
 #define CG_PLATFORM_H
-
-// Platform does:
-//   * OpenGL Context Creation
-//   * Hot reload game code
-//
-// Platform provides:
-//   * Logging
-//   * File I/O
-//   * Memory Management
 
 #include "core.h"
 
@@ -33,7 +35,7 @@ typedef struct cgPlatformState {
     void *data;
 } cgPlatformState;
 
-extern cgPlatformState *CG_PLATFORM;
+extern cgPlatformState *CG_PLATFORM_STATE;
 
 #define CG_LOADED(name) void name(cgPlatformState *state)
 typedef CG_LOADED(cgLoaded);

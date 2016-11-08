@@ -1,3 +1,5 @@
+/// \file
+
 #ifndef CG_CORE_H
 #define CG_CORE_H
 
@@ -6,22 +8,27 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Definitions
+//
+
 #ifdef _WIN32
 #define CG_PLATFORM_WINDOWS
 #else
 #error Unsuporrted platform
 #endif
 
+////////////////////////////////////////////////////////////////////////////////
+//
+// Utils
+//
+
 #ifdef CG_PLATFORM_WINDOWS
 #define CG_EXPORT __declspec(dllexport)
 #else
 #define CG_EXPORT
 #endif
-
-////////////////////////////////////////////////////////////////////////////////
-//
-// Utils
-//
 
 #define cg_assert(expr) assert(expr)
 
@@ -37,10 +44,10 @@
 // String
 //
 
-// Find `ch` in `str` from right.
-//
-// Return a pointer to the first occurrence of `ch` in `str`.
-// If the `ch` is not found, return NULL
+/// \brief Find `ch` in `str` from right.
+///
+/// \return A pointer to the first occurrence of `ch` in `str`,
+///         or NULL if the `ch` is not found.
 static inline char *cg_str_rfind(char *str, size_t size, char ch)
 {
     char *p = str + size - 1;
@@ -53,10 +60,12 @@ static inline char *cg_str_rfind(char *str, size_t size, char ch)
     return 0;
 }
 
-// Copy string from `src` into `dst` with NULL terminated.
-//
-// Return the number of characters copied (not including the terminating NULL character).
-static inline size_t cg_str_copy(char *dst, size_t dst_size, char *src, size_t src_size)
+/// \brief Copy string from `src` into `dst` with NULL terminated.
+///
+/// \return The number of characters copied (not including the terminating
+///         NULL character).
+static inline size_t cg_str_copy(char *dst, size_t dst_size,
+                                 char *src, size_t src_size)
 {
     size_t copied = 0;
     while (dst_size > 0 && src_size > 0) {
@@ -75,7 +84,9 @@ static inline size_t cg_str_copy(char *dst, size_t dst_size, char *src, size_t s
     return copied;
 }
 
-static inline size_t cg_str_concat(char *dst, size_t dst_size, char *src1, size_t src1_size, char *src2, size_t src2_size)
+static inline size_t cg_str_concat(char *dst, size_t dst_size,
+                                   char *src1, size_t src1_size,
+                                   char *src2, size_t src2_size)
 {
     size_t size = cg_str_copy(dst, dst_size, src1, src1_size);
     if (size == src1_size) {
@@ -88,7 +99,8 @@ static inline size_t cg_str_concat(char *dst, size_t dst_size, char *src1, size_
 // Push `src` into `dst` at offset `at`.
 //
 // Return the length of result string.
-static inline size_t cg_str_push(char *dst, size_t dst_size, size_t at, char *src, size_t src_size)
+static inline size_t cg_str_push(char *dst, size_t dst_size, size_t at,
+                                 char *src, size_t src_size)
 {
     size_t size = at;
     if (at < dst_size) {
