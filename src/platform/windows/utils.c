@@ -6,10 +6,20 @@ CG_VLOG(cg_vlog)
 {
     (void)level;
 
-    char buf[512];
-    _vsnprintf_s(buf, 512, 511, format, args);
-    buf[511] = 0;
+#define MAX_CHAR_COUNT 512
+    char buf[MAX_CHAR_COUNT];
+    int written = vsnprintf_s(buf, MAX_CHAR_COUNT, MAX_CHAR_COUNT - 2, format, args);
+    if (written < 0) {
+        written = MAX_CHAR_COUNT - 2;
+    }
+    buf[written++] = '\n';
+    buf[written] = 0;
+
+#if defined(CG_COMPILER_MSVC)
     OutputDebugString(buf);
+#else
+    vprintf(format, args);
+#endif
 }
 
 CG_LOG(cg_log)

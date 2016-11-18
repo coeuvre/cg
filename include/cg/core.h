@@ -13,19 +13,32 @@
 // Definitions
 //
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #define CG_PLATFORM_WINDOWS
 #else
-#error Unsuporrted platform
+#error Unsupported platform
 #endif
+
+#if defined(_MSC_VER)
+#define CG_COMPILER_MSVC
+#elif defined(__GNUC__)
+#define CG_COMPILER_GCC
+#elif defined(__clang__)
+#define CG_COMPILER_CLANG
+#else
+#error Unsupported compiler
+#endif
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Utils
 //
 
-#ifdef CG_PLATFORM_WINDOWS
+#if defined(CG_COMPILER_MSVC)
 #define CG_EXPORT __declspec(dllexport)
+#elif defined(CG_COMPILER_GCC)
+#define CG_EXPORT __attribute__((dllexport))
 #else
 #define CG_EXPORT
 #endif
@@ -132,10 +145,10 @@ typedef CG_LOG(cgLog);
 
 extern CG_LOG(cg_log);
 
-#define cg_error(format, ...) cg_log(cgLogLevel_Error, format, __VA_ARGS__)
-#define cg_warn(format, ...) cg_log(cgLogLevel_Warn, format, __VA_ARGS__)
-#define cg_info(format, ...) cg_log(cgLogLevel_Info, format, __VA_ARGS__)
-#define cg_debug(format, ...) cg_log(cgLogLevel_Debug, format, __VA_ARGS__)
-#define cg_trace(format, ...) cg_log(cgLogLevel_Trace, format, __VA_ARGS__)
+#define cg_error(format, ...) cg_log(cgLogLevel_Error, format, ##__VA_ARGS__)
+#define cg_warn(format, ...) cg_log(cgLogLevel_Warn, format, ##__VA_ARGS__)
+#define cg_info(format, ...) cg_log(cgLogLevel_Info, format, ##__VA_ARGS__)
+#define cg_debug(format, ...) cg_log(cgLogLevel_Debug, format, ##__VA_ARGS__)
+#define cg_trace(format, ...) cg_log(cgLogLevel_Trace, format, ##__VA_ARGS__)
 
 #endif // CG_CORE_H

@@ -5,6 +5,7 @@
 
 #include <Windows.h>
 #include <GL/GL.h>
+#include <stdio.h>
 
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 

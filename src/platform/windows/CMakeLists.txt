@@ -6,6 +6,5 @@ set(cg_windows_SOURCES
     utils.c)
 
 add_executable(cg_windows WIN32 ${cg_windows_SOURCES})
-set_target_properties(cg_windows
-                      PROPERTIES OUTPUT_NAME cg)
+set_target_properties(cg_windows PROPERTIES OUTPUT_NAME cg)
 target_link_libraries(cg_windows opengl32)
