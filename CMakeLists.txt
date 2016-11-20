@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.0)
 
 project(cg VERSION 0.1)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+include_directories(${cg_SOURCE_DIR}/include)
 
 add_subdirectory(src)
+
+enable_testing()
+add_subdirectory(test/core)
