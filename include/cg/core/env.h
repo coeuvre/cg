@@ -27,4 +27,4 @@
     #error Unsupported compiler
 #endif
 
-#endif /* CG_ENV_H */
+#endif /* CG_CORE_ENV_H */
