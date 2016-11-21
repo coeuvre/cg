@@ -1,13 +1,11 @@
 #ifndef CG_PLATFORM_WINDOW_UTILS_H
 #define CG_PLATFORM_WINDOW_UTILS_H
 
-#include "core.h"
-#include "platform/platform.h"
+#include <cg/core/prim.h>
 
 #include <Windows.h>
 
-static inline FILETIME
-get_last_write_time(char *filename)
+static inline FILETIME get_last_write_time(char *filename)
 {
     FILETIME time = {0};
 
@@ -19,16 +17,14 @@ get_last_write_time(char *filename)
     return time;
 }
 
-static inline int64_t
-get_current_counter()
+static inline int64_t get_current_counter(void)
 {
     LARGE_INTEGER counter;
     QueryPerformanceCounter(&counter);
     return counter.QuadPart;
 }
 
-static inline float
-get_seconds_elapsed(int64_t start, int64_t end)
+static inline float get_seconds_elapsed(int64_t start, int64_t end)
 {
     static int64_t freq = 0;
 
@@ -40,10 +36,6 @@ get_seconds_elapsed(int64_t start, int64_t end)
 
     return (float)(end - start) / (float)freq;
 }
-
-CG_VLOG(cg_vlog);
-CG_ALLOC(cg_alloc);
-CG_FREE(cg_free);
 
 size_t get_executable_dir(char *buf, size_t size);
 size_t get_executable_name(char *buf, size_t size);

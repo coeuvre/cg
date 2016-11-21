@@ -1,6 +1,8 @@
 #include <cg/core/log.h>
 
-#include <cg/platform/log.h>
+#include <stdio.h>
+
+#include <cg/platform/core/log.h>
 
 void cg_vlog_with_context(char *file, int line, enum cg_log_level level,
                           char *format, va_list args)

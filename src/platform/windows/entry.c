@@ -1,11 +1,11 @@
-#include "core.h"
-#include "platform/platform.h"
-
-#include "utils.h"
-
 #include <Windows.h>
 #include <GL/GL.h>
 #include <stdio.h>
+
+#include <cg/core/log.h>
+
+#include "platform/windows/util.h"
+
 
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 

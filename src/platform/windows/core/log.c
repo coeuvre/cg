@@ -1,4 +1,4 @@
-#include <cg/platform/log.h>
+#include <cg/platform/core/log.h>
 
 #include <stdio.h>
 

@@ -1,8 +1,9 @@
-#include <cg/core/string.h>
+#include <cg/core/log.h>
 #include <cg/core/prim.h>
+#include <cg/core/string.h>
 #include <cg/core/util.h>
 
-static void test_cstr_is_equal()
+static void test_cstr_is_equal(void)
 {
     cg_assert(cg_cstr_is_equal("This is a test string in cg.",
                                "This is a test string in cg."));
@@ -17,7 +18,7 @@ static void test_cstr_is_equal()
                                 "This is a test string in cg."));
 }
 
-static void test_cstr_rfind()
+static void test_cstr_rfind(void)
 {
     char *str = "This is a test string in cg.";
     size_t count = cg_cstr_count(str);
@@ -41,7 +42,7 @@ static void test_cstr_rfind()
     cg_assert(p == 22);
 }
 
-static void test_cstr_copy()
+static void test_cstr_copy(void)
 {
     char *str = "This is a test string in cg.";
 
