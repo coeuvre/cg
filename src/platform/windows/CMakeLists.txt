@@ -1,5 +1,8 @@
-include_directories(${cg_SOURCE_DIR}/include/cg)
+include_directories(${cg_SOURCE_DIR}/include)
 include_directories(${cg_SOURCE_DIR}/src)
+
+add_library(platform
+    core/log.c)
 
 set(cg_windows_SOURCES
     entry.c

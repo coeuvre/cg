@@ -4,6 +4,7 @@
 #ifdef _WIN32
     #define CG_PLATFORM_WINDOWS 1
 #elif __APPLE__
+    #include "TargetConditionals.h"
     #if TARGET_OS_IPHONE
         #define CG_PLATFORM_IOS 1
 
