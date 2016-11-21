@@ -5,14 +5,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#if defined(CG_COMPILER_MSVC)
-    #define CG_EXPORT __declspec(dllexport)
-#elif defined(CG_COMPILER_GCC)
-    #define CG_EXPORT __attribute__((dllexport))
-#else
-    #define CG_EXPORT
-#endif
-
-#define cg_array_count(a) (sizeof(a) / sizeof((a)[0]))
+#define CG_INVALID_INDEX SIZE_MAX
 
 #endif /* CG_CORE_PRIM_H */

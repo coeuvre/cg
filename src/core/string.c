@@ -1,60 +1,84 @@
-#include <cg/core/assert.h>
 #include <cg/core/string.h>
+#include <cg/core/util.h>
 
-char *cg_str_rfind(char *str, size_t size, char ch)
+/*
+ * TODO: utf-8
+ */
+
+size_t cg_cstr_size(char *str)
 {
-    char *p = str + size - 1;
+    size_t ret = 0;
 
-    while (p >= str) {
-        if (*p == ch) {
-            return p;
+    while (*str++) {
+        ++ret;
+    }
+
+    return ret;
+}
+
+size_t cg_cstr_count(char *str)
+{
+    size_t ret = 0;
+
+    while (*str++) {
+        ++ret;
+    }
+
+    return ret;
+}
+
+bool cg_cstr_is_equal(char *str1, char *str2)
+{
+    bool ret = true;
+
+    char *p1 = str1, *p2 = str2;
+    char ch1, ch2;
+    for (;;) {
+        ch1 = *p1++, ch2 = *p2++;
+
+        if (ch1 != ch2) {
+            ret = false;
+            break;
+        } else if (ch1 == 0) {
+            break;
         }
-        --p;
     }
 
-    return 0;
+    return ret;
 }
 
-size_t cg_str_copy(char *dst, size_t dst_size, char *src, size_t src_size)
+size_t cg_cstr_rfind(char *str, char ch)
 {
-    size_t copied = 0;
+    size_t ret = CG_INVALID_INDEX;
 
-    while (dst_size > 0 && src_size > 0) {
-        *dst++ = *src++;
-        --dst_size;
-        --src_size;
-        ++copied;
+    char *p = str;
+
+    char t;
+    while ((t = *p++)) {
+        if (t == ch) {
+            ret = p - str - 1;
+        }
     }
 
-    if (dst_size > 0) {
-        *dst = 0;
+    return ret;
+}
+
+size_t cg_cstr_copy(char *dst, size_t dst_size, char *src)
+{
+    char *pd = dst;
+    char *end = dst + dst_size;
+
+    char *ps = src;
+    char ch;
+    while ((pd < end) &&  (ch = *ps++)) {
+        *pd++ = ch;
+    }
+
+    if (pd < end) {
+        *pd = 0;
     } else {
-        *--dst = 0;
-        --copied;
+        *--pd = 0;
     }
 
-    return copied;
-}
-
-size_t cg_str_concat(char *dst, size_t dst_size, char *src1, size_t src1_size,
-                     char *src2, size_t src2_size)
-{
-    size_t size = cg_str_copy(dst, dst_size, src1, src1_size);
-    if (size == src1_size) {
-        assert(dst_size >= size);
-        size += cg_str_copy(dst + size, dst_size - size, src2, src2_size);
-    }
-    return size;
-}
-
-size_t cg_str_push(char *dst, size_t dst_size, size_t at,
-                   char *src, size_t src_size)
-{
-    size_t size = at;
-    if (at < dst_size) {
-        size += cg_str_copy(dst + at, dst_size - at, src, src_size);
-    } else {
-        size = dst_size;
-    }
-    return size;
+    return pd - dst;
 }

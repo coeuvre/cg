@@ -1,1 +1,4 @@
-add_library(core string.c)
+add_library(core
+    memory.c
+    string.c
+)

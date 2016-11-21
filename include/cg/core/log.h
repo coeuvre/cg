@@ -15,7 +15,13 @@ enum cg_log_level {
     CG_LOG_LEVEL_DEBUG   = 7,   /* debug-level messages */
 };
 
-void cg_vlog(enum cg_log_level level, char *format, va_list args);
-void cg_log(enum cg_log_level level, char *format, ...)
+#define cg_log(level, format, ...)                                            \
+    cg_log_with_context(__FILE__, __LINE__, level, format, ##__VA_ARGS__)
+
+void cg_vlog_with_context(char *file, int line, enum cg_log_level level,
+                          char *format, va_list args);
+
+void cg_log_with_context(char *file, int line, enum cg_log_level level,
+                         char *format, ...);
 
 #endif /* CG_CORE_LOG_H */
