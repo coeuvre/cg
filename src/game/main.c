@@ -1,7 +1,12 @@
-#include <OpenGL/gl.h>
-
 #include <cg/core.h>
 #include <cg/game/lifecycle.h>
+
+#ifdef CG_PLATFORM_WINDOWS
+#include <Windows.h>
+#include <GL/gl.h>
+#elif CG_PLATFORM_MACOS
+#include <OpenGL/gl.h>
+#endif
 
 struct cg_game_state {
     size_t size;
@@ -45,9 +50,9 @@ void cg_game_render(struct cg_game_state *state)
     glColor3f(1.0f, 0.85f, 0.35f);
     glBegin(GL_TRIANGLES);
     {
-        glVertex3f(  0.0,  0.6, 0.0);
-        glVertex3f( -0.2, -0.3, 0.0);
-        glVertex3f(  0.2, -0.3 ,0.0);
+        glVertex3f( 0.0f,  0.6f, 0.0f);
+        glVertex3f(-0.2f, -0.3f, 0.0f);
+        glVertex3f( 0.2f, -0.3f, 0.0f);
     }
     glEnd();
     glFlush();

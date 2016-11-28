@@ -6,6 +6,7 @@ include_directories(${cg_SOURCE_DIR}/include)
 include_directories(${cg_SOURCE_DIR}/src)
 
 add_subdirectory(src)
+add_subdirectory(app)
 
 enable_testing()
 add_subdirectory(test/core)

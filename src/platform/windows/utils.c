@@ -1,20 +1,8 @@
 #include <stdio.h>
 
-#include "utils.h"
+#include <cg/core.h>
 
-CG_ALLOC(cg_alloc)
-{
-    size_t *p = VirtualAlloc(0, size + sizeof(size_t), MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-    *p = size;
-    return p + 1;
-}
-
-CG_FREE(cg_free)
-{
-    size_t *origin = (size_t *)p - 1;
-    assert(*origin == size);
-    VirtualFree(origin, 0, MEM_RELEASE);
-}
+#include "platform/windows/utils.h"
 
 size_t
 get_executable_dir(char *buf, size_t size)
@@ -25,7 +13,7 @@ get_executable_dir(char *buf, size_t size)
         return size;
     } else {
         // Change the char after last `\\` to `\0`
-        char *p = cg_str_rfind(buf, len, '\\');
+        char *p = cg_cstr_rfind(buf, len, '\\');
         if (p) {
             ++p;
             *p = 0;

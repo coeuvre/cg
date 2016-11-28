@@ -1,14 +1,11 @@
+#include <cg/core.h>
+#include <cg/game.h>
+
 #include <Windows.h>
 #include <GL/GL.h>
 #include <stdio.h>
 
-#include <cg/core/log.h>
-#include <cg/core/string.h>
-#include <cg/core/util.h>
-
-#include <cg/game/life_cycle.h>
-
-#include "platform/windows/util.h"
+#include "platform/windows/utils.h"
 
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 
@@ -80,12 +77,11 @@ window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     return 0;
 }
 
-int CALLBACK
-WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
+void cg_run_game(struct cg_game_config *config)
 {
-    (void)prev_hinstance;
-    (void)cmd;
-    (void)show;
+    if (config == 0) {
+        return;
+    }
 
     cg_info("size_t: %d", sizeof(size_t));
     cg_info("uint64_t: %d", sizeof(uint64_t));
@@ -152,6 +148,8 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     cg_info("DLL temp name: %s", dll_temp_fullpath);
     */
 
+    HINSTANCE hinstance = GetModuleHandle(NULL);
+
     WNDCLASSEX wc = {0};
     wc.cbSize = sizeof(WNDCLASSEX);
     // For OpenGL:
@@ -164,7 +162,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
 
     if (RegisterClassEx(&wc) == 0) {
         cg_error("Failed to register window class.");
-        return -1;
+        return;
     }
 
     HWND hwnd = CreateWindowEx(0, WINDOW_CLASS_NAME,
@@ -178,7 +176,7 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
 
     if (hwnd == 0) {
         cg_error("Failed to create window.");
-        return -1;
+        return;
     }
 
     HDC hdc = GetDC(hwnd);
@@ -209,23 +207,23 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     int pfi = ChoosePixelFormat(hdc, &pfd);
     if (pfi == 0) {
         cg_error("Failed to choose pixel format.");
-        return -1;
+        return;
     }
 
     if (SetPixelFormat(hdc, pfi, &pfd) == FALSE) {
         cg_error("Failed to set pixel format.");
-        return -1;
+        return;
     }
 
     HGLRC hglrc = wglCreateContext(hdc);
     if (hglrc == NULL) {
         cg_error("Failed to create OpenGL context.");
-        return -1;
+        return;
     }
 
     if (wglMakeCurrent(hdc, hglrc) == FALSE) {
         cg_error("Failed to make current OpenGL context.");
-        return -1;
+        return;
     }
 
     cg_info("OpenGL Version: %s", glGetString(GL_VERSION));
@@ -239,12 +237,14 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
     assert(game_code.is_valid);
     */
 
-    cg_game_init();
+    if (config->lifecycle.init) {
+        config->lifecycle.init(config->userdata);
+    }
 
     ShowWindow(hwnd, SW_SHOW);
 
-    float frame_time = 0.016667f;
-    float elapsed_time = frame_time; // The first frame can start immediately
+    float frametime = 0.016667f;
+    float elapsed_time = frametime; // The first frame can start immediately
     int64_t last_counter = get_current_counter();
     int64_t current_counter = last_counter;
 
@@ -282,8 +282,8 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
         last_counter = current_counter;
         cg_debug("Before frame, elapsed_time: %f", elapsed_time);
 
-        if (elapsed_time >= frame_time) {
-            elapsed_time -= frame_time;
+        if (elapsed_time >= frametime) {
+            elapsed_time -= frametime;
 
             int64_t frame_start = get_current_counter();
 
@@ -293,8 +293,12 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
             }
             */
 
-            cg_game_update(frame_time);
-            cg_game_render();
+            if (config->lifecycle.update) {
+                config->lifecycle.update(config->userdata, frametime);
+            }
+            if (config->lifecycle.render) {
+                config->lifecycle.render(config->userdata);
+            }
 
             SwapBuffers(hdc);
 
@@ -308,12 +312,10 @@ WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance, LPSTR cmd, int show)
         last_counter = current_counter;
         cg_debug("After frame, elapsed_time: %f", elapsed_time);
 
-        if (frame_time > elapsed_time) {
-            uint32_t remaining = (uint32_t)((frame_time - elapsed_time) * 1000.0f);
+        if (frametime > elapsed_time) {
+            uint32_t remaining = (uint32_t)((frametime - elapsed_time) * 1000.0f);
             cg_debug("Sleep for %d ms", remaining);
             Sleep(remaining);
         }
     }
-
-    return 0;
 }
