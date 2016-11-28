@@ -4,12 +4,13 @@
 
 #import <Cocoa/Cocoa.h>
 #include <crt_externs.h> /* for _NSGetProgname */
-#include <OpenGL/gl.h>
 
 #include <cg/core.h>
 #include <cg/game/lifecycle.h>
 
 @interface CGOpenGLView : NSOpenGLView {
+    @public struct cg_game_state *state;
+
     CVDisplayLinkRef display_link;
 }
 - (CVReturn)getFrameForTime: (const CVTimeStamp *)output;
@@ -30,6 +31,7 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 @implementation CGOpenGLView
 - (void)prepareOpenGL
 {
+    /* Enable VSync */
     GLint swap_interval = 1;
     [[self openGLContext] setValues:&swap_interval
                        forParameter:NSOpenGLCPSwapInterval];
@@ -49,17 +51,11 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 
 - (CVReturn)getFrameForTime: (const CVTimeStamp *)output
 {
-    glClearColor(0, 0, 0, 0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(1.0f, 0.85f, 0.35f);
-    glBegin(GL_TRIANGLES);
-    {
-        glVertex3f(  0.0,  0.6, 0.0);
-        glVertex3f( -0.2, -0.3, 0.0);
-        glVertex3f(  0.2, -0.3 ,0.0);
-    }
-    glEnd();
-    glFlush();
+    float dt = 0.016667f;
+
+    cg_game_update(state, dt);
+
+    cg_game_render(state);
 
     return kCVReturnSuccess;
 }
@@ -119,7 +115,8 @@ int main(int argc, const char * argv[])
     create_menu(app);
 
     [app setActivationPolicy:NSApplicationActivationPolicyRegular];
-    NSOpenGLView *view = [[CGOpenGLView alloc] init];
+    CGOpenGLView *view = [[CGOpenGLView alloc] init];
+    view->state = state;
     [view setWantsBestResolutionOpenGLSurface:YES];
 
     NSRect rect = NSMakeRect(0, 0, 800, 600);
@@ -134,6 +131,7 @@ int main(int argc, const char * argv[])
     [window setContentView:view];
     [window makeFirstResponder:view];
     [window setTitle:@"CG Window"];
+    [window center];
     [window setAcceptsMouseMovedEvents:YES];
     [window setRestorable:NO];
     [window makeKeyAndOrderFront:nil];
