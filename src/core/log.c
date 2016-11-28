@@ -9,14 +9,7 @@ void cg_vlog_with_context(char *file, int line, enum cg_log_level level,
 {
 #define MAX_CHAR_COUNT 512
     char buf[MAX_CHAR_COUNT];
-    int written = vsnprintf_s(buf, MAX_CHAR_COUNT, MAX_CHAR_COUNT - 2,
-                              format, args);
-    if (written < 0) {
-        written = MAX_CHAR_COUNT - 2;
-    }
-    buf[written++] = '\n';
-    buf[written] = 0;
-
+    vsnprintf(buf, MAX_CHAR_COUNT, format, args);
     cg_platform_log(buf);
 }
 

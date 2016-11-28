@@ -1,7 +1,4 @@
-#include <cg/core/log.h>
-#include <cg/core/prim.h>
-#include <cg/core/string.h>
-#include <cg/core/util.h>
+#include <cg/core.h>
 
 static void test_cstr_is_equal(void)
 {

@@ -1,8 +1,6 @@
 #include <stdlib.h>
 
-#include <cg/core/log.h>
-#include <cg/core/memory.h>
-#include <cg/core/util.h>
+#include <cg/core.h>
 
 struct memory_info;
 

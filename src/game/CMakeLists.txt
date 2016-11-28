@@ -1,4 +1,3 @@
-add_executable(game WIN32
-    main.c)
+add_executable(game main.c)
 
-target_link_libraries(game core platform entry)
+target_link_libraries(game core platform)

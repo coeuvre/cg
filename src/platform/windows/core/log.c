@@ -6,6 +6,7 @@
 
 void cg_platform_log(char *message)
 {
-    OutputDebugString(message);
-    printf(message);
+    OutputDebugStringA(message);
+    OutputDebugStringA("\n");
+    printf("%s\n", message);
 }

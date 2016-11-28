@@ -1,3 +1,5 @@
 if (WIN32)
     add_subdirectory(windows)
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    add_subdirectory(macos)
 endif()

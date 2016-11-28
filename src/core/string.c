@@ -1,5 +1,4 @@
-#include <cg/core/string.h>
-#include <cg/core/util.h>
+#include <cg/core.h>
 
 /*
  * TODO: utf-8

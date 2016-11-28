@@ -1,5 +1,5 @@
-#ifndef CG_CORE_UTIL_H
-#define CG_CORE_UTIL_H
+#ifndef CG_CORE_UTILS_H
+#define CG_CORE_UTILS_H
 
 #include <cg/core/env.h>
 
@@ -17,4 +17,4 @@
 
 #define cg_assert(expr) assert(expr)
 
-#endif /* CG_CORE_UTIL_H */
+#endif /* CG_CORE_UTILS_H */
