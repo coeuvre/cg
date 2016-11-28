@@ -5,6 +5,8 @@ struct cg_game_state;
 
 struct cg_game_state *cg_game_startup(void);
 
+void cg_game_started(struct cg_game_state *state);
+
 void cg_game_shutdown(struct cg_game_state *state);
 
 void cg_game_update(struct cg_game_state *state, float dt);

@@ -1,16 +1,53 @@
+#if !__has_feature(objc_arc)
+    #error "ARC is off"
+#endif
+
 #import <Cocoa/Cocoa.h>
-// for _NSGetProgname
-#include <crt_externs.h>
+#include <crt_externs.h> /* for _NSGetProgname */
 #include <OpenGL/gl.h>
 
 #include <cg/core.h>
 #include <cg/game/lifecycle.h>
 
-@interface CGOpenGLView : NSOpenGLView
+@interface CGOpenGLView : NSOpenGLView {
+    CVDisplayLinkRef display_link;
+}
+- (CVReturn)getFrameForTime: (const CVTimeStamp *)output;
 @end
 
+static CVReturn display_link_callback(CVDisplayLinkRef display_link,
+                                      const CVTimeStamp *now,
+                                      const CVTimeStamp *output,
+                                      CVOptionFlags flags,
+                                      CVOptionFlags *flags_out, void *context)
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [(__bridge CGOpenGLView *)context getFrameForTime:output];
+    });
+    return kCVReturnSuccess;
+}
+
 @implementation CGOpenGLView
--(void) drawRect: (NSRect) bounds
+- (void)prepareOpenGL
+{
+    GLint swap_interval = 1;
+    [[self openGLContext] setValues:&swap_interval
+                       forParameter:NSOpenGLCPSwapInterval];
+
+    CVDisplayLinkCreateWithActiveCGDisplays(&display_link);
+    CVDisplayLinkSetOutputCallback(display_link, &display_link_callback,
+                                   (__bridge void * _Nullable)(self));
+
+    CGLContextObj context = [[self openGLContext] CGLContextObj];
+    CGLPixelFormatObj pixelformat = [[[self openGLContext] pixelFormat]
+                                     CGLPixelFormatObj];
+    CVDisplayLinkSetCurrentCGDisplayFromOpenGLContext(display_link,
+                                                      context, pixelformat);
+
+    CVDisplayLinkStart(display_link);
+}
+
+- (CVReturn)getFrameForTime: (const CVTimeStamp *)output
 {
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -23,42 +60,29 @@
     }
     glEnd();
     glFlush();
+
+    return kCVReturnSuccess;
+}
+
+- (void)dealloc
+{
+    CVDisplayLinkRelease(display_link);
 }
 @end
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
-    struct cg_game_state *state;
+    @public struct cg_game_state *state;
 }
 
 @end
 
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    NSOpenGLView *view = [[CGOpenGLView alloc] init];
-    [view setWantsBestResolutionOpenGLSurface:YES];
-
-    self->state = cg_game_startup();
-
-    NSRect rect = NSMakeRect(0, 0, 800, 600);
-    NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
-    NSWindowStyleMaskMiniaturizable;
-    NSWindow *window = [[NSWindow alloc]
-        initWithContentRect:rect
-                  styleMask:style
-                    backing:NSBackingStoreBuffered
-                      defer:true];
-
-    [window setContentView:view];
-    [window makeFirstResponder:view];
-    [window setTitle:@"CG Window"];
-    [window setAcceptsMouseMovedEvents:YES];
-    [window setRestorable:NO];
-
-    [window makeKeyAndOrderFront:nil];
+    cg_game_started(state);
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    cg_game_shutdown(self->state);
+    cg_game_shutdown(state);
 }
 @end
 
@@ -75,8 +99,8 @@ static void create_menu(NSApplication *app)
     [item setSubmenu:menu];
 
     [menu addItemWithTitle:@"Quit"
-                       action:@selector(terminate:)
-                keyEquivalent:@"q"];
+                    action:@selector(terminate:)
+             keyEquivalent:@"q"];
 
     // Prior to Snow Leopard, we need to use this oddly-named semi-private API
     // to get the application menu working properly.
@@ -85,17 +109,37 @@ static void create_menu(NSApplication *app)
 
 int main(int argc, const char * argv[])
 {
-    @autoreleasepool {
-        NSApplication *app = [NSApplication sharedApplication];
-        AppDelegate *delegate = [[AppDelegate alloc] init];
-        [app setDelegate:delegate];
+    struct cg_game_state *state = cg_game_startup();
 
-        create_menu(app);
+    NSApplication *app = [NSApplication sharedApplication];
+    AppDelegate *delegate = [[AppDelegate alloc] init];
+    delegate->state = state;
+    [app setDelegate:delegate];
 
-        [app setActivationPolicy:NSApplicationActivationPolicyRegular];
-        [app activateIgnoringOtherApps:YES];
-        [app run];
-    }
+    create_menu(app);
+
+    [app setActivationPolicy:NSApplicationActivationPolicyRegular];
+    NSOpenGLView *view = [[CGOpenGLView alloc] init];
+    [view setWantsBestResolutionOpenGLSurface:YES];
+
+    NSRect rect = NSMakeRect(0, 0, 800, 600);
+    NSUInteger style = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+                       NSWindowStyleMaskMiniaturizable;
+    NSWindow *window = [[NSWindow alloc]
+        initWithContentRect:rect
+                  styleMask:style
+                    backing:NSBackingStoreBuffered
+                      defer:true];
+
+    [window setContentView:view];
+    [window makeFirstResponder:view];
+    [window setTitle:@"CG Window"];
+    [window setAcceptsMouseMovedEvents:YES];
+    [window setRestorable:NO];
+    [window makeKeyAndOrderFront:nil];
+
+    [app activateIgnoringOtherApps:YES];
+    [app run];
 
     return 0;
 }

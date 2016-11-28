@@ -17,6 +17,11 @@ struct cg_game_state *cg_game_startup(void)
     return state;
 }
 
+void cg_game_started(struct cg_game_state *state)
+{
+    cg_debug("STARTED");
+}
+
 void cg_game_shutdown(struct cg_game_state *state)
 {
     cg_debug("SHUTDOWN");
