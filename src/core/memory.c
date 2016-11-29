@@ -65,7 +65,7 @@ void cg_free_with_context(void *p, size_t size, char *file, int line)
     cg_assert(mi != 0);
 
     if (mi->size != size) {
-        cg_log_with_context(file, line, CG_LOG_LEVEL_WARNING,
+        cg_log_with_context(file, line, CG_LOG_LEVEL_WARN,
                             "Memory corrupted: free memory with size %zu, " \
                             "but it was allocated with size %zu.",
                             size, mi->size);

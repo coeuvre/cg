@@ -17,4 +17,6 @@
 
 #define cg_assert(expr) assert(expr)
 
+#define cg_unreachable() cg_assert(!"unreachable")
+
 #endif /* CG_CORE_UTILS_H */

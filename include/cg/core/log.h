@@ -9,11 +9,21 @@ enum cg_log_level {
     CG_LOG_LEVEL_ALERT   = 1,   /* action must be taken immediately */
     CG_LOG_LEVEL_CRIT    = 2,   /* critical conditions */
     CG_LOG_LEVEL_ERROR   = 3,   /* error conditions */
-    CG_LOG_LEVEL_WARNING = 4,   /* warning conditions */
+    CG_LOG_LEVEL_WARN    = 4,   /* warning conditions */
     CG_LOG_LEVEL_NOTICE  = 5,   /* normal but significant condition */
     CG_LOG_LEVEL_INFO    = 6,   /* informational */
     CG_LOG_LEVEL_DEBUG   = 7,   /* debug-level messages */
 };
+
+/*
+ * Set log level.
+ */
+void cg_set_log_level(enum cg_log_level level);
+
+/*
+ * Get current log level.
+ */
+enum cg_log_level cg_get_log_level(void);
 
 void cg_vlog_with_context(char *file, int line, enum cg_log_level level,
                           char *format, va_list args);

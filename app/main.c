@@ -40,31 +40,10 @@ static void render(void *userdata)
     glFlush();
 }
 
-#if CG_PLATFORM_WINDOWS
-
-int CALLBACK WinMain(HINSTANCE hinstance, HINSTANCE prev_hinstance,
-                     LPSTR cmd, int show)
-{
-    struct cg_game_config config = {
-        .lifecycle = {
-            .init = &init,
-            .term = &term,
-            .update = &update,
-            .render = &render,
-        },
-
-        .userdata = 0,
-    };
-
-    cg_run_game(&config);
-
-    return 0;
-}
-
-#elif CG_PLATFORM_MACOS
-
 int main(int argc, const char *argv[])
 {
+    cg_set_log_level(CG_LOG_LEVEL_DEBUG);
+
     struct cg_game_config config = {
         .lifecycle = {
             .init = &init,
@@ -80,5 +59,3 @@ int main(int argc, const char *argv[])
 
     return 0;
 }
-
-#endif

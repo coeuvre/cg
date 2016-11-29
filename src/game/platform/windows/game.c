@@ -9,49 +9,8 @@
 
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 
-/*
-typedef struct GameCode {
-    HMODULE dll;
-    FILETIME dll_last_write_time;
-
-    cgLoaded *loaded;
-    cgUpdate *update;
-
-    bool is_valid;
-} GameCode;
-
-static GameCode
-load_game_code(char *dll_filename, char *dll_temp_filename)
-{
-    GameCode game_code = {0};
-
-    game_code.dll_last_write_time = get_last_write_time(dll_filename);
-
-    CopyFile(dll_filename, dll_temp_filename, FALSE);
-    game_code.dll = LoadLibrary(dll_temp_filename);
-
-    if (game_code.dll) {
-        game_code.loaded = (cgLoaded *)GetProcAddress(game_code.dll, "cg_loaded");
-        game_code.update = (cgUpdate *)GetProcAddress(game_code.dll, "cg_update");
-        game_code.is_valid = game_code.update;
-    }
-
-    return game_code;
-}
-
-static void
-unload_game_code(GameCode *game_code)
-{
-    if (game_code->dll) {
-        FreeLibrary(game_code->dll);
-    }
-
-    game_code->is_valid = false;
-}
-*/
-
-static LRESULT CALLBACK
-window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
+                                    WPARAM wparam, LPARAM lparam)
 {
     switch (msg) {
         case WM_KEYDOWN: {
@@ -77,83 +36,70 @@ window_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     return 0;
 }
 
+struct frame_context {
+    struct cg_game_config *config;
+    HDC hdc;
+    int64_t last_frame_start;
+    float frametime;
+};
+
+/*
+ * TODO: The gap between two frames is not stable even the frame cost is low.
+ *       Find a way to fix this.
+ */
+static void do_one_frame(struct frame_context *context)
+{
+    struct cg_game_config *config = context->config;
+
+    int64_t frame_start = get_current_counter();
+
+    if (context->last_frame_start != 0) {
+        float frame_gap = get_seconds_elapsed(context->last_frame_start,
+                                              frame_start);
+        cg_debug("Frame Gap: %f", frame_gap);
+    }
+    context->last_frame_start = frame_start;
+
+    if (config->lifecycle.update) {
+        config->lifecycle.update(config->userdata, context->frametime);
+    }
+
+    if (config->lifecycle.render) {
+        config->lifecycle.render(config->userdata);
+    }
+
+    int64_t frame_end = get_current_counter();
+    float frame_cost = get_seconds_elapsed(frame_start, frame_end);
+    cg_debug("Frame Cost: %f", frame_cost);
+
+    SwapBuffers(context->hdc);
+
+    frame_end = get_current_counter();
+    float elapsed = get_seconds_elapsed(frame_start, frame_end);
+
+    if (elapsed < context->frametime) {
+        uint32_t t = (uint32_t)((context->frametime - elapsed) * 1000.0f);
+        cg_debug("Sleep for %d ms", t);
+        Sleep(t);
+    }
+}
+
 void cg_run_game(struct cg_game_config *config)
 {
     if (config == 0) {
         return;
     }
 
-    cg_info("size_t: %d", sizeof(size_t));
-    cg_info("uint64_t: %d", sizeof(uint64_t));
-    cg_info("uint32_t: %d", sizeof(uint32_t));
-    cg_info("double: %d", sizeof(double));
-    cg_info("float: %d", sizeof(float));
-
-    /*
-    cgPlatformState state = {
-        .api = {
-            .vlog = cg_vlog,
-            .memory = {
-                .alloc = cg_alloc,
-                .free = cg_free,
-            },
-        }
-    };
-    */
-
-    /*
-    char exectuable_dir[MAX_PATH];
-    size_t exectuable_dir_size = get_executable_dir(exectuable_dir, cg_array_count(exectuable_dir));
-    cg_info("Executable directory: %s", exectuable_dir);
-
-    char exectuable_name[MAX_PATH];
-    size_t exectuable_name_size = get_executable_name(exectuable_name, cg_array_count(exectuable_name));
-
-    char dll_name[MAX_PATH];
-    size_t dll_name_size = cg_cstr_copy(dll_name, cg_array_count(dll_name), exectuable_name);
-    {
-        size_t p = cg_cstr_rfind(dll_name, '.');
-        if (p != CG_INVALID_INDEX) {
-            char ext[] = ".dll";
-            dll_name_size = cg_cstr_copy(dll_name + p,
-                                         cg_array_count(dll_name) - p, ext);
-        } else {
-            cg_assert(!"Bad executable name");
-        }
-    }
-
-    char dll_fullpath[MAX_PATH];
-    cg_str_concat(dll_fullpath, cg_array_count(dll_fullpath),
-                  exectuable_dir, exectuable_dir_size, dll_name, dll_name_size);
-    cg_info("DLL name: %s", dll_fullpath);
-
-    char dll_temp_name[512];
-    size_t dll_temp_name_size = cg_str_copy(dll_temp_name, cg_array_count(dll_temp_name),
-                                            exectuable_name, exectuable_name_size);
-    {
-        char *p = cg_str_rfind(dll_temp_name, dll_temp_name_size, '.');
-        if (p) {
-            char ext[] = "_temp.dll";
-            dll_temp_name_size = cg_str_push(dll_temp_name, cg_array_count(dll_temp_name),
-                                             p - dll_temp_name,
-                                             ext, cg_array_count(ext) - 1);
-        } else {
-            assert(!"Bad executable name");
-        }
-    }
-
-    char dll_temp_fullpath[MAX_PATH];
-    cg_str_concat(dll_temp_fullpath, cg_array_count(dll_temp_fullpath),
-                  exectuable_dir, exectuable_dir_size, dll_temp_name, dll_temp_name_size);
-    cg_info("DLL temp name: %s", dll_temp_fullpath);
-    */
-
     HINSTANCE hinstance = GetModuleHandle(NULL);
 
     WNDCLASSEX wc = {0};
     wc.cbSize = sizeof(WNDCLASSEX);
-    // For OpenGL:
-    // When you create your HWND, you need to make sure that it has the CS_OWNDC set for its style.
+    /*
+     * For OpenGL:
+     *
+     * When you create your HWND, you need to make sure that it has the CS_OWNDC
+     * set for its style.
+     */
     wc.style = CS_OWNDC;
     wc.lpfnWndProc = window_proc;
     wc.hCursor = LoadCursor(0, IDC_ARROW);
@@ -183,23 +129,17 @@ void cg_run_game(struct cg_game_config *config)
     PIXELFORMATDESCRIPTOR pfd = {
         sizeof(PIXELFORMATDESCRIPTOR),
         1,
-        //Flags
-        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-        //The kind of framebuffer. RGBA or palette.
-        PFD_TYPE_RGBA,
-        //Colordepth of the framebuffer.
-        32,
+        PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER, /* Flags */
+        PFD_TYPE_RGBA, /* The kind of framebuffer. RGBA or palette. */
+        32, /* Colordepth of the framebuffer. */
         0, 0, 0, 0, 0, 0,
         0,
         0,
         0,
         0, 0, 0, 0,
-        //Number of bits for the depthbuffer
-        24,
-        //Number of bits for the stencilbuffer
-        8,
-        //Number of Aux buffers in the framebuffer.
-        0,
+        24, /* Number of bits for the depthbuffer */
+        8, /* Number of bits for the stencilbuffer */
+        0, /* Number of Aux buffers in the framebuffer. */
         PFD_MAIN_PLANE,
         0,
         0, 0, 0
@@ -228,94 +168,31 @@ void cg_run_game(struct cg_game_config *config)
 
     cg_info("OpenGL Version: %s", glGetString(GL_VERSION));
 
-    /*
-    GameCode game_code = load_game_code(dll_fullpath, dll_temp_fullpath);
-    if (game_code.is_valid) {
-        game_code.loaded(&state);
-    }
-
-    assert(game_code.is_valid);
-    */
-
     if (config->lifecycle.init) {
         config->lifecycle.init(config->userdata);
     }
 
     ShowWindow(hwnd, SW_SHOW);
 
-    float frametime = 0.016667f;
-    float elapsed_time = frametime; // The first frame can start immediately
-    int64_t last_counter = get_current_counter();
-    int64_t current_counter = last_counter;
+    struct frame_context context = {
+        .config = config,
+        .hdc = hdc,
+        .last_frame_start = 0,
+        .frametime = 0.016667f,
+    };
 
-    for (;;) {
-        bool running = true;
-
-        MSG msg = {0};
-        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
+    bool running = true;
+    MSG msg;
+    while (running) {
+        if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
             if (msg.message == WM_QUIT) {
                 running = false;
-                break;
             } else {
                 TranslateMessage(&msg);
                 DispatchMessage(&msg);
             }
-        }
-
-        if (!running) {
-            break;
-        }
-
-        /*
-        FILETIME new_dll_last_write_time = get_last_write_time(dll_fullpath);
-        if (CompareFileTime(&new_dll_last_write_time, &game_code.dll_last_write_time) != 0) {
-            unload_game_code(&game_code);
-            game_code = load_game_code(dll_fullpath, dll_temp_fullpath);
-            if (game_code.is_valid) {
-                game_code.loaded(&state);
-            }
-        }
-        */
-
-        current_counter = get_current_counter();
-        elapsed_time += get_seconds_elapsed(last_counter, current_counter);
-        last_counter = current_counter;
-        cg_debug("Before frame, elapsed_time: %f", elapsed_time);
-
-        if (elapsed_time >= frametime) {
-            elapsed_time -= frametime;
-
-            int64_t frame_start = get_current_counter();
-
-            /*
-            if (game_code.is_valid) {
-                game_code.update(frame_time);
-            }
-            */
-
-            if (config->lifecycle.update) {
-                config->lifecycle.update(config->userdata, frametime);
-            }
-            if (config->lifecycle.render) {
-                config->lifecycle.render(config->userdata);
-            }
-
-            SwapBuffers(hdc);
-
-            int64_t frame_end = get_current_counter();
-            float frame_cost = get_seconds_elapsed(frame_start, frame_end);
-            cg_debug("Frame cost: %f", frame_cost);
-        }
-
-        current_counter = get_current_counter();
-        elapsed_time += get_seconds_elapsed(last_counter, current_counter);
-        last_counter = current_counter;
-        cg_debug("After frame, elapsed_time: %f", elapsed_time);
-
-        if (frametime > elapsed_time) {
-            uint32_t remaining = (uint32_t)((frametime - elapsed_time) * 1000.0f);
-            cg_debug("Sleep for %d ms", remaining);
-            Sleep(remaining);
+        } else {
+            do_one_frame(&context);
         }
     }
 }
