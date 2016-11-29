@@ -17,17 +17,29 @@ static enum cg_log_level LEVEL = CG_LOG_LEVEL_ERROR;
 static char *log_level_to_str(enum cg_log_level level)
 {
     switch (level) {
-    case CG_LOG_LEVEL_DEFAULT: return "DEFAULT";
-    case CG_LOG_LEVEL_EMERG: return "MERGE";
-    case CG_LOG_LEVEL_ALERT: return "ALERT";
-    case CG_LOG_LEVEL_CRIT: return "CRIT";
-    case CG_LOG_LEVEL_ERROR: return "ERROR";
-    case CG_LOG_LEVEL_WARN: return "WARN";
-    case CG_LOG_LEVEL_NOTICE: return "NOTICE";
-    case CG_LOG_LEVEL_INFO: return "INFO";
-    case CG_LOG_LEVEL_DEBUG: return "DEBUG";
-    default: cg_unreachable(); return "";
+    case CG_LOG_LEVEL_DEFAULT:
+        return "DEFAULT";
+    case CG_LOG_LEVEL_EMERG:
+        return "MERGE";
+    case CG_LOG_LEVEL_ALERT:
+        return "ALERT";
+    case CG_LOG_LEVEL_CRIT:
+        return "CRIT";
+    case CG_LOG_LEVEL_ERROR:
+        return "ERROR";
+    case CG_LOG_LEVEL_WARN:
+        return "WARN";
+    case CG_LOG_LEVEL_NOTICE:
+        return "NOTICE";
+    case CG_LOG_LEVEL_INFO:
+        return "INFO";
+    case CG_LOG_LEVEL_DEBUG:
+        return "DEBUG";
     }
+
+    cg_unreachable();
+
+    return "";
 }
 
 void cg_set_log_level(enum cg_log_level level)

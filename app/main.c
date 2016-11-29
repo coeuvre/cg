@@ -31,11 +31,9 @@ static void render(void *userdata)
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1.0f, 0.85f, 0.35f);
     glBegin(GL_TRIANGLES);
-    {
         glVertex3f( 0.0f,  0.6f, 0.0f);
         glVertex3f(-0.2f, -0.3f, 0.0f);
         glVertex3f( 0.2f, -0.3f, 0.0f);
-    }
     glEnd();
     glFlush();
 }
@@ -44,15 +42,17 @@ int main(int argc, const char *argv[])
 {
     cg_set_log_level(CG_LOG_LEVEL_DEBUG);
 
-    struct cg_game_config config = {
-        .lifecycle = {
-            .init = &init,
-            .term = &term,
-            .update = &update,
-            .render = &render,
-        },
+    struct cg_game_lifecycle lifecycle = {
+        .init   = &init,
+        .term   = &term,
+        .update = &update,
+        .render = &render,
 
-        .userdata = 0,
+    };
+
+    struct cg_game_config config = {
+        .lifecycle = &lifecycle,
+        .userdata  = 0,
     };
 
     cg_run_game(&config);

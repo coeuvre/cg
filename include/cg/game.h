@@ -9,7 +9,7 @@ struct cg_game_lifecycle {
 };
 
 struct cg_game_config {
-    struct cg_game_lifecycle lifecycle;
+    struct cg_game_lifecycle *lifecycle;
     void *userdata;
 };
 

@@ -12,28 +12,27 @@
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
                                     WPARAM wparam, LPARAM lparam)
 {
+    int32_t key = (int32_t)wparam;
+
     switch (msg) {
-        case WM_KEYDOWN: {
-            int32_t key = (int32_t)wparam;
-            if (key == VK_ESCAPE) {
-                PostQuitMessage(0);
-            }
-        } break;
-
-        case WM_CLOSE: {
+    case WM_KEYDOWN:
+        if (key == VK_ESCAPE) {
             PostQuitMessage(0);
-            cg_debug("WM_CLOSE");
-        } break;
-
-        case WM_DESTROY: {
-            cg_debug("WM_DESTROY");
-            cg_assert(false);
         }
+        break;
 
-        default: return DefWindowProc(hwnd, msg, wparam, lparam);
+    case WM_CLOSE:
+        PostQuitMessage(0);
+        cg_debug("WM_CLOSE");
+        break;
+
+    case WM_DESTROY:
+        cg_debug("WM_DESTROY");
+        cg_assert(false);
+        break;
     }
 
-    return 0;
+    return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
 struct frame_context {
@@ -60,12 +59,12 @@ static void do_one_frame(struct frame_context *context)
     }
     context->last_frame_start = frame_start;
 
-    if (config->lifecycle.update) {
-        config->lifecycle.update(config->userdata, context->frametime);
+    if (config->lifecycle->update) {
+        config->lifecycle->update(config->userdata, context->frametime);
     }
 
-    if (config->lifecycle.render) {
-        config->lifecycle.render(config->userdata);
+    if (config->lifecycle->render) {
+        config->lifecycle->render(config->userdata);
     }
 
     int64_t frame_end = get_current_counter();
@@ -86,7 +85,7 @@ static void do_one_frame(struct frame_context *context)
 
 void cg_run_game(struct cg_game_config *config)
 {
-    if (config == 0) {
+    if (config == 0 || config->lifecycle == 0) {
         return;
     }
 
@@ -168,8 +167,8 @@ void cg_run_game(struct cg_game_config *config)
 
     cg_info("OpenGL Version: %s", glGetString(GL_VERSION));
 
-    if (config->lifecycle.init) {
-        config->lifecycle.init(config->userdata);
+    if (config->lifecycle->init) {
+        config->lifecycle->init(config->userdata);
     }
 
     ShowWindow(hwnd, SW_SHOW);
@@ -194,5 +193,9 @@ void cg_run_game(struct cg_game_config *config)
         } else {
             do_one_frame(&context);
         }
+    }
+
+    if (config->lifecycle->term) {
+        config->lifecycle->term(config->userdata);
     }
 }
