@@ -1,6 +1,5 @@
 add_library(platform
-    core/log.c
-    entry.m)
+    core/log.c)
 find_library(cocoa_framework Cocoa)
 find_library(opengl_framework OpenGL)
 find_library(core_video_framework CoreVideo)

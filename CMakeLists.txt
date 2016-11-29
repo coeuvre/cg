@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(cg VERSION 0.1)
+project(libcg VERSION 0.1)
 
 include_directories(${cg_SOURCE_DIR}/include)
 include_directories(${cg_SOURCE_DIR}/src)

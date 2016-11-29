@@ -6,10 +6,10 @@
 #include <crt_externs.h> /* for _NSGetProgname */
 
 #include <cg/core.h>
-#include <cg/game/lifecycle.h>
+#include <cg/game.h>
 
 @interface CGOpenGLView : NSOpenGLView {
-    @public struct cg_game_state *state;
+    @public struct cg_game_config *config;
 
     CVDisplayLinkRef display_link;
 }
@@ -53,9 +53,13 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 {
     float dt = 0.016667f;
 
-    cg_game_update(state, dt);
+    if (config->lifecycle.update) {
+        config->lifecycle.update(config->userdata, dt);
+    }
 
-    cg_game_render(state);
+    if (config->lifecycle.render) {
+        config->lifecycle.render(config->userdata);
+    }
 
     return kCVReturnSuccess;
 }
@@ -67,18 +71,22 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 @end
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
-    @public struct cg_game_state *state;
+    @public struct cg_game_config *config;
 }
 
 @end
 
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    cg_game_started(state);
+    if (config->lifecycle.init) {
+        config->lifecycle.init(config->userdata);
+    }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    cg_game_shutdown(state);
+    if (config->lifecycle.term) {
+        config->lifecycle.term(config->userdata);
+    }
 }
 @end
 
@@ -103,20 +111,22 @@ static void create_menu(NSApplication *app)
     [app performSelector:@selector(setAppleMenu:) withObject:menu];
 }
 
-int main(int argc, const char * argv[])
+void cg_run_game(struct cg_game_config *config)
 {
-    struct cg_game_state *state = cg_game_startup();
+    if (config == 0) {
+        return;
+    }
 
     NSApplication *app = [NSApplication sharedApplication];
     AppDelegate *delegate = [[AppDelegate alloc] init];
-    delegate->state = state;
+    delegate->config = config;
     [app setDelegate:delegate];
 
     create_menu(app);
 
     [app setActivationPolicy:NSApplicationActivationPolicyRegular];
     CGOpenGLView *view = [[CGOpenGLView alloc] init];
-    view->state = state;
+    view->config = config;
     [view setWantsBestResolutionOpenGLSurface:YES];
 
     NSRect rect = NSMakeRect(0, 0, 800, 600);
@@ -138,6 +148,4 @@ int main(int argc, const char * argv[])
 
     [app activateIgnoringOtherApps:YES];
     [app run];
-
-    return 0;
 }
