@@ -2,6 +2,31 @@
 
 #include <cg/core.h>
 
+#include <Windows.h>
+
+int64_t cg_get_current_counter(void)
+{
+    LARGE_INTEGER counter;
+    QueryPerformanceCounter(&counter);
+    return counter.QuadPart;
+}
+
+int64_t cg_counter_to_nanosec(int64_t counter)
+{
+    static int64_t freq = 0;
+
+    if (freq == 0) {
+        LARGE_INTEGER f;
+        QueryPerformanceFrequency(&f);
+        freq = f.QuadPart;
+    }
+
+    int64_t nanosec = counter * 1000000000 / freq;
+
+    return nanosec;
+}
+
+#if 0
 #include "platform/windows/utils.h"
 
 size_t
@@ -48,3 +73,4 @@ get_executable_name(char *buf, size_t size)
         }
     }
 }
+#endif

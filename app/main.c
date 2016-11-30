@@ -8,6 +8,10 @@
 #include <OpenGL/gl.h>
 #endif
 
+struct game_state {
+    int64_t last_counter;
+};
+
 static void init(void *userdata)
 {
     cg_debug("INIT");
@@ -21,6 +25,16 @@ static void term(void *userdata)
 static void update(void *userdata, float dt)
 {
     cg_debug("UPDATE");
+
+    struct game_state *state = userdata;
+
+    int64_t current_count = cg_get_current_counter();
+    if (state->last_counter != 0) {
+        int64_t nanosec =
+            cg_counter_to_nanosec(current_count - state->last_counter);
+        cg_debug("Frame Gap: %"PRId64"ns", nanosec);
+    }
+    state->last_counter = current_count;
 }
 
 static void render(void *userdata)
@@ -50,9 +64,11 @@ int main(int argc, const char *argv[])
 
     };
 
+    struct game_state state = {0};
+
     struct cg_game_config config = {
         .lifecycle = &lifecycle,
-        .userdata  = 0,
+        .userdata  = &state,
     };
 
     cg_run_game(&config);

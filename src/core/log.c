@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include <cg/platform/core/log.h>
+#include "core/platform/log.h"
 
 /*
  * Log level

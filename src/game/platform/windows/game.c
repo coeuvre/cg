@@ -5,8 +5,6 @@
 #include <GL/GL.h>
 #include <stdio.h>
 
-#include "platform/windows/utils.h"
-
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
@@ -50,14 +48,9 @@ static void do_one_frame(struct frame_context *context)
 {
     struct cg_game_config *config = context->config;
 
-    int64_t frame_start = get_current_counter();
+    int64_t nano_frametime = cg_sec_to_nanosec(context->frametime);
 
-    if (context->last_frame_start != 0) {
-        float frame_gap = get_seconds_elapsed(context->last_frame_start,
-                                              frame_start);
-        cg_debug("Frame Gap: %f", frame_gap);
-    }
-    context->last_frame_start = frame_start;
+    int64_t frame_start = cg_get_current_counter();
 
     if (config->lifecycle->update) {
         config->lifecycle->update(config->userdata, context->frametime);
@@ -67,17 +60,17 @@ static void do_one_frame(struct frame_context *context)
         config->lifecycle->render(config->userdata);
     }
 
-    int64_t frame_end = get_current_counter();
-    float frame_cost = get_seconds_elapsed(frame_start, frame_end);
-    cg_debug("Frame Cost: %f", frame_cost);
+    int64_t frame_end = cg_get_current_counter();
+    int64_t frame_cost = cg_counter_to_nanosec(frame_end - frame_start);
+    cg_debug("Frame Cost: %"PRId64"ns", frame_cost);
 
     SwapBuffers(context->hdc);
 
-    frame_end = get_current_counter();
-    float elapsed = get_seconds_elapsed(frame_start, frame_end);
+    frame_end = cg_get_current_counter();
+    int64_t elapsed = cg_counter_to_nanosec(frame_end - frame_start);
 
-    if (elapsed < context->frametime) {
-        uint32_t t = (uint32_t)((context->frametime - elapsed) * 1000.0f);
+    if (elapsed < nano_frametime) {
+        uint32_t t = (uint32_t)cg_nanosec_to_millisec(nano_frametime - elapsed);
         cg_debug("Sleep for %d ms", t);
         Sleep(t);
     }

@@ -1,3 +1,4 @@
-add_library(game game.c)
+add_library(game_platform
+    game.c)
 
-target_link_libraries(game core platform)
+target_link_libraries(game_platform opengl32)
