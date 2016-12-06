@@ -62,7 +62,8 @@ static void do_one_frame(struct frame_context *context)
 
     int64_t frame_end = cg_get_current_counter();
     int64_t frame_cost = cg_counter_to_nanosec(frame_end - frame_start);
-    cg_debug("Frame Cost: %"PRId64"ns", frame_cost);
+    frame_cost = cg_nanosec_to_millisec(frame_cost);
+    cg_debug("Frame Cost: %"PRId64"ms", frame_cost);
 
     SwapBuffers(context->hdc);
 
@@ -81,6 +82,8 @@ void cg_run_game(struct cg_game_config *config)
     if (config == 0 || config->lifecycle == 0) {
         return;
     }
+
+    timeBeginPeriod(1);
 
     HINSTANCE hinstance = GetModuleHandle(NULL);
 

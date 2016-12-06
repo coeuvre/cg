@@ -32,7 +32,8 @@ static void update(void *userdata, float dt)
     if (state->last_counter != 0) {
         int64_t nanosec =
             cg_counter_to_nanosec(current_count - state->last_counter);
-        cg_debug("Frame Gap: %"PRId64"ns", nanosec);
+        int64_t millisec = cg_nanosec_to_millisec(nanosec);
+        cg_debug("Frame Gap: %"PRId64"ms", millisec);
     }
     state->last_counter = current_count;
 }
