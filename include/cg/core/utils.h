@@ -20,16 +20,16 @@
 
 #define cg_unreachable() cg_assert(!"unreachable")
 
-int64_t cg_get_current_counter(void);
+uint64_t cg_get_current_counter(void);
 
-int64_t cg_counter_to_nanosec(int64_t counter);
+uint64_t cg_counter_to_nanosec(uint64_t counter);
 
 #define cg_nanosec_to_sec(nanosec) ((double)((nanosec) / 1000000000.0))
 
 #define cg_nanosec_to_millisec(nanosec) ((nanosec) / 1000000)
 
-#define cg_sec_to_nanosec(sec) ((int64_t)((sec) * 1000000000))
+#define cg_sec_to_nanosec(sec) ((uint64_t)((sec) * 1000000000))
 
-#define cg_sec_to_millisec(sec) ((int64_t)((sec) * 1000))
+#define cg_sec_to_millisec(sec) ((uint64_t)((sec) * 1000))
 
 #endif /* CG_CORE_UTILS_H */

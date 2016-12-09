@@ -53,13 +53,20 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 {
     float dt = 0.016667f;
 
-    if (config->lifecycle.update) {
-        config->lifecycle.update(config->userdata, dt);
+    uint64_t start = cg_get_current_counter();
+
+    if (config->lifecycle->update) {
+        config->lifecycle->update(config->userdata, dt);
     }
 
-    if (config->lifecycle.render) {
-        config->lifecycle.render(config->userdata);
+    if (config->lifecycle->render) {
+        config->lifecycle->render(config->userdata);
     }
+
+    uint64_t end = cg_get_current_counter();
+    uint64_t frame_cost = cg_counter_to_nanosec(end - start);
+    frame_cost = cg_nanosec_to_millisec(frame_cost);
+    cg_debug("Frame cost: %"PRIu64"ms", frame_cost);
 
     return kCVReturnSuccess;
 }
@@ -78,14 +85,14 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    if (config->lifecycle.init) {
-        config->lifecycle.init(config->userdata);
+    if (config->lifecycle->init) {
+        config->lifecycle->init(config->userdata);
     }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    if (config->lifecycle.term) {
-        config->lifecycle.term(config->userdata);
+    if (config->lifecycle->term) {
+        config->lifecycle->term(config->userdata);
     }
 }
 @end
