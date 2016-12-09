@@ -21,12 +21,12 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
 
     case WM_CLOSE:
         PostQuitMessage(0);
-        cg_debug("WM_CLOSE");
+        CG_DEBUG("WM_CLOSE");
         break;
 
     case WM_DESTROY:
-        cg_debug("WM_DESTROY");
-        cg_assert(false);
+        CG_DEBUG("WM_DESTROY");
+        CG_ASSERT(false);
         break;
     }
 
@@ -63,7 +63,7 @@ static void do_one_frame(struct frame_context *context)
     int64_t frame_end = cg_get_current_counter();
     int64_t frame_cost = cg_counter_to_nanosec(frame_end - frame_start);
     frame_cost = cg_nanosec_to_millisec(frame_cost);
-    cg_debug("Frame Cost: %"PRId64"ms", frame_cost);
+    CG_DEBUG("Frame Cost: %"PRId64"ms", frame_cost);
 
     SwapBuffers(context->hdc);
 
@@ -72,7 +72,7 @@ static void do_one_frame(struct frame_context *context)
 
     if (elapsed < nano_frametime) {
         uint32_t t = (uint32_t)cg_nanosec_to_millisec(nano_frametime - elapsed);
-        cg_debug("Sleep for %d ms", t);
+        CG_DEBUG("Sleep for %d ms", t);
         Sleep(t);
     }
 }
@@ -102,7 +102,7 @@ void cg_run_game(struct cg_game_config *config)
     wc.lpszClassName = WINDOW_CLASS_NAME;
 
     if (RegisterClassEx(&wc) == 0) {
-        cg_error("Failed to register window class.");
+        CG_ERROR("Failed to register window class.");
         return;
     }
 
@@ -116,7 +116,7 @@ void cg_run_game(struct cg_game_config *config)
                                NULL);
 
     if (hwnd == 0) {
-        cg_error("Failed to create window.");
+        CG_ERROR("Failed to create window.");
         return;
     }
 
@@ -141,27 +141,27 @@ void cg_run_game(struct cg_game_config *config)
     };
     int pfi = ChoosePixelFormat(hdc, &pfd);
     if (pfi == 0) {
-        cg_error("Failed to choose pixel format.");
+        CG_ERROR("Failed to choose pixel format.");
         return;
     }
 
     if (SetPixelFormat(hdc, pfi, &pfd) == FALSE) {
-        cg_error("Failed to set pixel format.");
+        CG_ERROR("Failed to set pixel format.");
         return;
     }
 
     HGLRC hglrc = wglCreateContext(hdc);
     if (hglrc == NULL) {
-        cg_error("Failed to create OpenGL context.");
+        CG_ERROR("Failed to create OpenGL context.");
         return;
     }
 
     if (wglMakeCurrent(hdc, hglrc) == FALSE) {
-        cg_error("Failed to make current OpenGL context.");
+        CG_ERROR("Failed to make current OpenGL context.");
         return;
     }
 
-    cg_info("OpenGL Version: %s", glGetString(GL_VERSION));
+    CG_INFO("OpenGL Version: %s", glGetString(GL_VERSION));
 
     if (config->lifecycle->init) {
         config->lifecycle->init(config->userdata);

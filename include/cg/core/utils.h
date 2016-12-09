@@ -16,9 +16,9 @@
 
 #define cg_array_count(a) (sizeof(a) / sizeof((a)[0]))
 
-#define cg_assert(expr) assert(expr)
+#define CG_ASSERT(expr) assert(expr)
 
-#define cg_unreachable() cg_assert(!"unreachable")
+#define CG_UNREACHABLE() CG_ASSERT(!"unreachable")
 
 uint64_t cg_get_current_counter(void);
 

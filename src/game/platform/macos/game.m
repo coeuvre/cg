@@ -66,7 +66,7 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
     uint64_t end = cg_get_current_counter();
     uint64_t frame_cost = cg_counter_to_nanosec(end - start);
     frame_cost = cg_nanosec_to_millisec(frame_cost);
-    cg_debug("Frame cost: %"PRIu64"ms", frame_cost);
+    CG_DEBUG("Frame cost: %"PRIu64"ms", frame_cost);
 
     return kCVReturnSuccess;
 }

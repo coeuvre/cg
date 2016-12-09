@@ -34,13 +34,13 @@ void cg_log_with_context(char *file, int line, enum cg_log_level level,
 #define cg_log(level, format, ...)                                             \
     cg_log_with_context(__FILE__, __LINE__, level, format, ##__VA_ARGS__)
 
-#define cg_error(format, ...) cg_log(CG_LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
+#define CG_ERROR(format, ...) cg_log(CG_LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
 
-#define cg_warning(format, ...)                                                \
+#define CG_WARNING(format, ...)                                                \
     cg_log(CG_LOG_LEVEL_WARNING, format, ##__VA_ARGS__)
 
-#define cg_info(format, ...) cg_log(CG_LOG_LEVEL_INFO, format, ##__VA_ARGS__)
+#define CG_INFO(format, ...) cg_log(CG_LOG_LEVEL_INFO, format, ##__VA_ARGS__)
 
-#define cg_debug(format, ...) cg_log(CG_LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
+#define CG_DEBUG(format, ...) cg_log(CG_LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
 
 #endif /* CG_CORE_LOG_H */

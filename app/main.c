@@ -14,17 +14,17 @@ struct game_state {
 
 static void init(void *userdata)
 {
-    cg_debug("INIT");
+    CG_DEBUG("INIT");
 }
 
 static void term(void *userdata)
 {
-    cg_debug("TERM");
+    CG_DEBUG("TERM");
 }
 
 static void update(void *userdata, float dt)
 {
-    cg_debug("UPDATE");
+    CG_DEBUG("UPDATE");
 
     struct game_state *state = userdata;
 
@@ -33,14 +33,14 @@ static void update(void *userdata, float dt)
         int64_t nanosec =
             cg_counter_to_nanosec(current_count - state->last_counter);
         int64_t millisec = cg_nanosec_to_millisec(nanosec);
-        cg_debug("Frame Gap: %"PRId64"ms", millisec);
+        CG_DEBUG("Frame Gap: %"PRId64"ms", millisec);
     }
     state->last_counter = current_count;
 }
 
 static void render(void *userdata)
 {
-    cg_debug("RENDER");
+    CG_DEBUG("RENDER");
 
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
