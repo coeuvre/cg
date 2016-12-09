@@ -1,6 +1,8 @@
 #include <cg/core.h>
 #include <cg/game.h>
 
+#include "game/game.h"
+
 #include <Windows.h>
 #include <GL/GL.h>
 #include <stdio.h>
@@ -34,7 +36,7 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
 }
 
 struct frame_context {
-    struct cg_game_config *config;
+    void *userdata;
     HDC hdc;
     int64_t last_frame_start;
     float frametime;
@@ -46,43 +48,37 @@ struct frame_context {
  */
 static void do_one_frame(struct frame_context *context)
 {
-    struct cg_game_config *config = context->config;
+    uint64_t frametime_ns = cg_s2ns(context->frametime);
 
-    int64_t nano_frametime = cg_sec_to_nanosec(context->frametime);
+    uint64_t frame_start = cg_current_counter();
 
-    int64_t frame_start = cg_get_current_counter();
-
-    if (config->lifecycle->update) {
-        config->lifecycle->update(config->userdata, context->frametime);
+    if (CG_GAME_UPDATE) {
+        CG_GAME_UPDATE(context->userdata, context->frametime);
     }
 
-    if (config->lifecycle->render) {
-        config->lifecycle->render(config->userdata);
+    if (CG_GAME_RENDER) {
+        CG_GAME_RENDER(context->userdata);
     }
 
-    int64_t frame_end = cg_get_current_counter();
-    int64_t frame_cost = cg_counter_to_nanosec(frame_end - frame_start);
-    frame_cost = cg_nanosec_to_millisec(frame_cost);
+    uint64_t frame_end = cg_current_counter();
+    uint64_t frame_cost = cg_counter2ns(frame_end - frame_start);
+    frame_cost = cg_ns2ms(frame_cost);
     CG_DEBUG("Frame Cost: %"PRId64"ms", frame_cost);
 
     SwapBuffers(context->hdc);
 
-    frame_end = cg_get_current_counter();
-    int64_t elapsed = cg_counter_to_nanosec(frame_end - frame_start);
+    frame_end = cg_current_counter();
+    uint64_t elapsed = cg_counter2ns(frame_end - frame_start);
 
-    if (elapsed < nano_frametime) {
-        uint32_t t = (uint32_t)cg_nanosec_to_millisec(nano_frametime - elapsed);
+    if (elapsed < frametime_ns) {
+        uint32_t t = (uint32_t)cg_ns2ms(frametime_ns - elapsed);
         CG_DEBUG("Sleep for %d ms", t);
         Sleep(t);
     }
 }
 
-void cg_run_game(struct cg_game_config *config)
+void cg_run_game(void *userdata)
 {
-    if (config == 0 || config->lifecycle == 0) {
-        return;
-    }
-
     timeBeginPeriod(1);
 
     HINSTANCE hinstance = GetModuleHandle(NULL);
@@ -163,14 +159,14 @@ void cg_run_game(struct cg_game_config *config)
 
     CG_INFO("OpenGL Version: %s", glGetString(GL_VERSION));
 
-    if (config->lifecycle->init) {
-        config->lifecycle->init(config->userdata);
+    if (CG_GAME_INIT) {
+        CG_GAME_INIT(userdata);
     }
 
     ShowWindow(hwnd, SW_SHOW);
 
     struct frame_context context = {
-        .config = config,
+        .userdata = userdata,
         .hdc = hdc,
         .last_frame_start = 0,
         .frametime = 0.016667f,
@@ -191,7 +187,7 @@ void cg_run_game(struct cg_game_config *config)
         }
     }
 
-    if (config->lifecycle->term) {
-        config->lifecycle->term(config->userdata);
+    if (CG_GAME_TERM) {
+        CG_GAME_TERM(userdata);
     }
 }

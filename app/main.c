@@ -28,11 +28,11 @@ static void update(void *userdata, float dt)
 
     struct game_state *state = userdata;
 
-    int64_t current_count = cg_get_current_counter();
+    uint64_t current_count = cg_current_counter();
     if (state->last_counter != 0) {
-        int64_t nanosec =
-            cg_counter_to_nanosec(current_count - state->last_counter);
-        int64_t millisec = cg_nanosec_to_millisec(nanosec);
+        uint64_t nanosec =
+            cg_counter2ns(current_count - state->last_counter);
+        uint64_t millisec = cg_ns2ms(nanosec);
         CG_DEBUG("Frame Gap: %"PRId64"ms", millisec);
     }
     state->last_counter = current_count;
@@ -57,22 +57,14 @@ int main(int argc, const char *argv[])
 {
     cg_set_log_level(CG_LOG_LEVEL_DEBUG);
 
-    struct cg_game_lifecycle lifecycle = {
-        .init   = &init,
-        .term   = &term,
-        .update = &update,
-        .render = &render,
-
-    };
+    cg_on_game_init(&init);
+    cg_on_game_update(&update);
+    cg_on_game_render(&render);
+    cg_on_game_term(&term);
 
     struct game_state state = {0};
 
-    struct cg_game_config config = {
-        .lifecycle = &lifecycle,
-        .userdata  = &state,
-    };
-
-    cg_run_game(&config);
+    cg_run_game(&state);
 
     return 0;
 }

@@ -53,7 +53,7 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 {
     float dt = 0.016667f;
 
-    uint64_t start = cg_get_current_counter();
+    uint64_t start = cg_current_counter();
 
     if (config->lifecycle->update) {
         config->lifecycle->update(config->userdata, dt);
@@ -63,9 +63,9 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
         config->lifecycle->render(config->userdata);
     }
 
-    uint64_t end = cg_get_current_counter();
-    uint64_t frame_cost = cg_counter_to_nanosec(end - start);
-    frame_cost = cg_nanosec_to_millisec(frame_cost);
+    uint64_t end = cg_current_counter();
+    uint64_t frame_cost = cg_counter2ns(end - start);
+    frame_cost = cg_ns2ms(frame_cost);
     CG_DEBUG("Frame cost: %"PRIu64"ms", frame_cost);
 
     return kCVReturnSuccess;

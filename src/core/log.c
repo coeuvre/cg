@@ -27,7 +27,7 @@ static char *log_level_to_str(enum cg_log_level level)
         "DEBUG",
     };
 
-    if (level >= 0 && level < cg_array_count(t)) {
+    if (level >= 0 && level < CG_COUNT(t)) {
         return t[level];
     } else {
         return "DEFAULT";
