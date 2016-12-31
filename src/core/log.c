@@ -12,9 +12,9 @@
  *
  * TODO: Make this thread safe.
  */
-static enum cg_log_level LEVEL = CG_LOG_LEVEL_ERROR;
+static enum CgLogLevel LEVEL = CG_LOG_LEVEL_ERROR;
 
-static char *log_level_to_str(enum cg_log_level level)
+static char *logLevelToString(enum CgLogLevel level)
 {
     static char *t[] = {
         "MERGE",
@@ -34,24 +34,27 @@ static char *log_level_to_str(enum cg_log_level level)
     }
 }
 
-void cg_set_log_level(enum cg_log_level level)
+void cgSetLogLevel(enum CgLogLevel level)
 {
     LEVEL = level;
 }
 
-enum cg_log_level cg_get_log_level(void)
+enum CgLogLevel cgGetLogLevel(void)
 {
     return LEVEL;
 }
 
-void cg_vlog_with_context(char *file, int line, enum cg_log_level level,
-                          char *format, va_list args)
+void cgLogWithContext(char *file, int line, enum CgLogLevel level,
+                      char *format, ...)
 {
+    (void)level;
+    va_list args;
+    va_start(args, format);
     if (level <= LEVEL) {
 #define MAX_CHAR_COUNT 512
         char buf[MAX_CHAR_COUNT];
 
-        char *level_str = log_level_to_str(level);
+        char *level_str = logLevelToString(level);
         size_t written = snprintf(buf, MAX_CHAR_COUNT,
                                 "%s(%d): [%s] ", file, line, level_str);
 
@@ -61,14 +64,5 @@ void cg_vlog_with_context(char *file, int line, enum cg_log_level level,
 
         cg_platform_log(buf);
     }
-}
-
-void cg_log_with_context(char *file, int line, enum cg_log_level level,
-                         char *format, ...)
-{
-    (void)level;
-    va_list args;
-    va_start(args, format);
-    cg_vlog_with_context(file, line, level, format, args);
     va_end(args);
 }

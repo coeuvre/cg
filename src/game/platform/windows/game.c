@@ -23,11 +23,11 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
 
     case WM_CLOSE:
         PostQuitMessage(0);
-        CG_DEBUG("WM_CLOSE");
+        CG_LOG(DEBUG, "WM_CLOSE");
         break;
 
     case WM_DESTROY:
-        CG_DEBUG("WM_DESTROY");
+        CG_LOG(DEBUG, "WM_DESTROY");
         CG_ASSERT(false);
         break;
     }
@@ -63,7 +63,7 @@ static void do_one_frame(struct frame_context *context)
     uint64_t frame_end = cg_current_counter();
     uint64_t frame_cost = cg_counter2ns(frame_end - frame_start);
     frame_cost = cg_ns2ms(frame_cost);
-    CG_DEBUG("Frame Cost: %"PRId64"ms", frame_cost);
+    CG_LOG(DEBUG, "Frame Cost: %"PRId64"ms", frame_cost);
 
     SwapBuffers(context->hdc);
 
@@ -72,7 +72,7 @@ static void do_one_frame(struct frame_context *context)
 
     if (elapsed < frametime_ns) {
         uint32_t t = (uint32_t)cg_ns2ms(frametime_ns - elapsed);
-        CG_DEBUG("Sleep for %d ms", t);
+        CG_LOG(DEBUG, "Sleep for %d ms", t);
         Sleep(t);
     }
 }
@@ -157,7 +157,7 @@ void cg_run_game(void *userdata)
         return;
     }
 
-    CG_INFO("OpenGL Version: %s", glGetString(GL_VERSION));
+    CG_LOG(INFO, ("OpenGL Version: %s", glGetString(GL_VERSION));
 
     if (CG_GAME_INIT) {
         CG_GAME_INIT(userdata);

@@ -3,7 +3,7 @@
 
 #include <stdarg.h>
 
-enum cg_log_level {
+enum CgLogLevel {
     CG_LOG_LEVEL_DEFAULT = -1,  /* default (or last) loglevel */
     CG_LOG_LEVEL_EMERG   = 0,   /* system is unusable */
     CG_LOG_LEVEL_ALERT   = 1,   /* action must be taken immediately */
@@ -18,29 +18,18 @@ enum cg_log_level {
 /*
  * Set log level.
  */
-void cg_set_log_level(enum cg_log_level level);
+void cgSetLogLevel(enum CgLogLevel level);
 
 /*
  * Get current log level.
  */
-enum cg_log_level cg_get_log_level(void);
+enum CgLogLevel cgGetLogLevel(void);
 
-void cg_vlog_with_context(char *file, int line, enum cg_log_level level,
-                          char *format, va_list args);
+void cgLogWithContext(char *file, int line, enum CgLogLevel level,
+                      char *format, ...);
 
-void cg_log_with_context(char *file, int line, enum cg_log_level level,
-                         char *format, ...);
+#define CG_LOG(level, format, ...)                                             \
+    cgLogWithContext(__FILE__, __LINE__, CG_LOG_LEVEL_##level, format,         \
+                     ##__VA_ARGS__)
 
-#define cg_log(level, format, ...)                                             \
-    cg_log_with_context(__FILE__, __LINE__, level, format, ##__VA_ARGS__)
-
-#define CG_ERROR(format, ...) cg_log(CG_LOG_LEVEL_ERROR, format, ##__VA_ARGS__)
-
-#define CG_WARNING(format, ...)                                                \
-    cg_log(CG_LOG_LEVEL_WARNING, format, ##__VA_ARGS__)
-
-#define CG_INFO(format, ...) cg_log(CG_LOG_LEVEL_INFO, format, ##__VA_ARGS__)
-
-#define CG_DEBUG(format, ...) cg_log(CG_LOG_LEVEL_DEBUG, format, ##__VA_ARGS__)
-
-#endif /* CG_CORE_LOG_H */
+#endif // CG_CORE_LOG_H
