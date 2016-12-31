@@ -6,10 +6,11 @@
 #include <crt_externs.h> /* for _NSGetProgname */
 
 #include <cg/core.h>
-#include <cg/game.h>
+
+#include "game/game.h"
 
 @interface CGOpenGLView : NSOpenGLView {
-    @public struct cg_game_config *config;
+    @public void *userdata;
 
     CVDisplayLinkRef display_link;
 }
@@ -55,12 +56,12 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 
     uint64_t start = cg_current_counter();
 
-    if (config->lifecycle->update) {
-        config->lifecycle->update(config->userdata, dt);
+    if (CG_GAME_UPDATE) {
+        CG_GAME_UPDATE(userdata, dt);
     }
 
-    if (config->lifecycle->render) {
-        config->lifecycle->render(config->userdata);
+    if (CG_GAME_RENDER) {
+        CG_GAME_RENDER(userdata);
     }
 
     uint64_t end = cg_current_counter();
@@ -78,21 +79,21 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 @end
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
-    @public struct cg_game_config *config;
+    @public void *userdata;
 }
 
 @end
 
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    if (config->lifecycle->init) {
-        config->lifecycle->init(config->userdata);
+    if (CG_GAME_INIT) {
+        CG_GAME_INIT(userdata);
     }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    if (config->lifecycle->term) {
-        config->lifecycle->term(config->userdata);
+    if (CG_GAME_TERM) {
+        CG_GAME_TERM(userdata);
     }
 }
 @end
@@ -118,22 +119,18 @@ static void create_menu(NSApplication *app)
     [app performSelector:@selector(setAppleMenu:) withObject:menu];
 }
 
-void cg_run_game(struct cg_game_config *config)
+void cg_run_game(void *userdata)
 {
-    if (config == 0) {
-        return;
-    }
-
     NSApplication *app = [NSApplication sharedApplication];
     AppDelegate *delegate = [[AppDelegate alloc] init];
-    delegate->config = config;
+    delegate->userdata = userdata;
     [app setDelegate:delegate];
 
     create_menu(app);
 
     [app setActivationPolicy:NSApplicationActivationPolicyRegular];
     CGOpenGLView *view = [[CGOpenGLView alloc] init];
-    view->config = config;
+    view->userdata = userdata;
     [view setWantsBestResolutionOpenGLSurface:YES];
 
     NSRect rect = NSMakeRect(0, 0, 800, 600);
