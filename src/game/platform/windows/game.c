@@ -98,7 +98,7 @@ void cg_run_game(void *userdata)
     wc.lpszClassName = WINDOW_CLASS_NAME;
 
     if (RegisterClassEx(&wc) == 0) {
-        CG_ERROR("Failed to register window class.");
+        CG_LOG(ERROR, "Failed to register window class.");
         return;
     }
 
@@ -112,7 +112,7 @@ void cg_run_game(void *userdata)
                                NULL);
 
     if (hwnd == 0) {
-        CG_ERROR("Failed to create window.");
+        CG_LOG(ERROR, "Failed to create window.");
         return;
     }
 
@@ -137,27 +137,27 @@ void cg_run_game(void *userdata)
     };
     int pfi = ChoosePixelFormat(hdc, &pfd);
     if (pfi == 0) {
-        CG_ERROR("Failed to choose pixel format.");
+        CG_LOG(ERROR, "Failed to choose pixel format.");
         return;
     }
 
     if (SetPixelFormat(hdc, pfi, &pfd) == FALSE) {
-        CG_ERROR("Failed to set pixel format.");
+        CG_LOG(ERROR, "Failed to set pixel format.");
         return;
     }
 
     HGLRC hglrc = wglCreateContext(hdc);
     if (hglrc == NULL) {
-        CG_ERROR("Failed to create OpenGL context.");
+        CG_LOG(ERROR, "Failed to create OpenGL context.");
         return;
     }
 
     if (wglMakeCurrent(hdc, hglrc) == FALSE) {
-        CG_ERROR("Failed to make current OpenGL context.");
+        CG_LOG(ERROR, "Failed to make current OpenGL context.");
         return;
     }
 
-    CG_LOG(INFO, ("OpenGL Version: %s", glGetString(GL_VERSION));
+    CG_LOG(INFO, "OpenGL Version: %s", glGetString(GL_VERSION));
 
     if (CG_GAME_INIT) {
         CG_GAME_INIT(userdata);

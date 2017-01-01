@@ -55,7 +55,7 @@ static void render(void *userdata)
 
 int main(int argc, const char *argv[])
 {
-    cgSetLogLevel(CG_LOG_LEVEL_DEBUG);
+    cgSetLogLevel(CGLOG_LEVEL_DEBUG);
 
     cg_on_game_init(&init);
     cg_on_game_update(&update);

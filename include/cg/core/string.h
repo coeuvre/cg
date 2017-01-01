@@ -22,10 +22,10 @@ bool cg_cstr_is_equal(char *str1, char *str2);
  * Given a string `str` with length `count` (not including the NULL character),
  * find `ch` in it from right.
  *
- * Return the index of first occurrence of `ch` in `str`, or CG_INVALID_INDEX
+ * Return the index of first occurrence of `ch` in `str`, or CGINVALID_INDEX
  * if the `ch` is not found.
  */
-size_t cg_cstr_rfind(char *str, char ch);
+CGsize cg_cstr_rfind(char *str, char ch);
 
 /*
  * Copy string from `src` into `dst` with NULL terminated.

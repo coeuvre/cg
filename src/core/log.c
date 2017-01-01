@@ -12,9 +12,9 @@
  *
  * TODO: Make this thread safe.
  */
-static enum CgLogLevel LEVEL = CG_LOG_LEVEL_ERROR;
+static CGLogLevel LEVEL = CGLOG_LEVEL_ERROR;
 
-static char *logLevelToString(enum CgLogLevel level)
+static char *logLevelToString(CGLogLevel level)
 {
     static char *t[] = {
         "MERGE",
@@ -34,17 +34,17 @@ static char *logLevelToString(enum CgLogLevel level)
     }
 }
 
-void cgSetLogLevel(enum CgLogLevel level)
+void cgSetLogLevel(CGLogLevel level)
 {
     LEVEL = level;
 }
 
-enum CgLogLevel cgGetLogLevel(void)
+CGLogLevel cgGetLogLevel(void)
 {
     return LEVEL;
 }
 
-void cgLogWithContext(char *file, int line, enum CgLogLevel level,
+void cgLogWithContext(char *file, int line, CGLogLevel level,
                       char *format, ...)
 {
     (void)level;

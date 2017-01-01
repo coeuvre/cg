@@ -24,7 +24,7 @@ static void test_cstr_rfind(void)
     size_t p;
 
     p = cg_cstr_rfind(str, 'z');
-    CG_ASSERT(p == CG_INVALID_INDEX);
+    CG_ASSERT(p == CGINVALID_INDEX);
 
     p = cg_cstr_rfind(str, '.');
     CG_ASSERT(p == count - 1);
