@@ -56,18 +56,18 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 
     uint64_t start = cg_current_counter();
 
-    if (CG_GAME_UPDATE) {
-        CG_GAME_UPDATE(userdata, dt);
+    if (CGGAME_UPDATE) {
+        CGGAME_UPDATE(userdata, dt);
     }
 
-    if (CG_GAME_RENDER) {
-        CG_GAME_RENDER(userdata);
+    if (CGGAME_RENDER) {
+        CGGAME_RENDER(userdata);
     }
 
     uint64_t end = cg_current_counter();
     uint64_t frame_cost = cg_counter2ns(end - start);
     frame_cost = cg_ns2ms(frame_cost);
-    CG_LOG(DEBUG, "Frame cost: %"PRIu64"ms", frame_cost);
+    CGLOG(DEBUG, "Frame cost: %"PRIu64"ms", frame_cost);
 
     return kCVReturnSuccess;
 }
@@ -86,14 +86,14 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    if (CG_GAME_INIT) {
-        CG_GAME_INIT(userdata);
+    if (CGGAME_INIT) {
+        CGGAME_INIT(userdata);
     }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    if (CG_GAME_TERM) {
-        CG_GAME_TERM(userdata);
+    if (CGGAME_TERM) {
+        CGGAME_TERM(userdata);
     }
 }
 @end

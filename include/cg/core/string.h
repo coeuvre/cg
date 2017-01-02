@@ -1,5 +1,5 @@
-#ifndef CG_CORE_STRING_H
-#define CG_CORE_STRING_H
+#ifndef CGCORE_STRING_H
+#define CGCORE_STRING_H
 
 #include <cg/core/prim.h>
 
@@ -53,4 +53,4 @@ struct cg_dstr {
 struct cg_dstr *cg_dstr_create(size_t size);
 void cg_dstr_delete(struct cg_dstr *dstr);
 
-#endif /* CG_CORE_STRING_H */
+#endif /* CGCORE_STRING_H */

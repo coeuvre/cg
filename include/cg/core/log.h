@@ -28,7 +28,7 @@ CGLogLevel cgGetLogLevel(void);
 void cgLogWithContext(char *file, int line, CGLogLevel level,
                       char *format, ...);
 
-#define CG_LOG(level, format, ...)                                             \
+#define CGLOG(level, format, ...)                                              \
     cgLogWithContext(__FILE__, __LINE__, CGLOG_LEVEL_##level, format,          \
                      ##__VA_ARGS__)
 

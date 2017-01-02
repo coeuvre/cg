@@ -27,7 +27,7 @@ static char *logLevelToString(CGLogLevel level)
         "DEBUG",
     };
 
-    if (level >= 0 && level < CG_COUNT(t)) {
+    if (level >= 0 && level < CGCOUNT(t)) {
         return t[level];
     } else {
         return "DEFAULT";

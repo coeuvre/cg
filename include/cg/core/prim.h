@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+typedef void     CGvoid;
 typedef bool     CGbool;
 typedef int8_t   CGi8;
 typedef uint8_t  CGu8;

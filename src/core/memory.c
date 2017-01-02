@@ -2,26 +2,26 @@
 
 #include <cg/core.h>
 
-struct memory_info;
-
-struct memory_info {
-    char *file;
-    int line;
-    size_t size;
-    struct memory_info *next;
-    struct memory_info *prev;
+typedef struct MemoryInfo MemoryInfo;
+struct MemoryInfo {
+    CGi8 *file;
+    CGu32 line;
+    CGuint size;
+    MemoryInfo *next;
+    MemoryInfo *prev;
 };
 
 /*
- * This static variable means we are NOT thread safe.
+ * NOTE: This static variable means we are NOT thread safe.
  */
-static struct memory_info *HEAD;
+static MemoryInfo *HEAD;
 
-static void *push_memory_info(void *memory, size_t size, char *file, int line)
+static CGvoid *pushMemoryInfo(CGvoid *memory, CGuint size,
+                              CGi8 *file, CGu32 line)
 {
-    struct memory_info *mi = memory;
+    MemoryInfo *mi = memory;
 
-    CG_ASSERT(mi != 0);
+    CGASSERT(mi != 0);
 
     mi->file = file;
     mi->line = line;
@@ -38,31 +38,31 @@ static void *push_memory_info(void *memory, size_t size, char *file, int line)
     return mi + 1;
 }
 
-void *cg_alloc_with_context(size_t size, char *file, int line)
+CGvoid *cgAllocWithContext(CGuint size, CGi8 *file, CGu32 line)
 {
-    void *memory = malloc(size + sizeof(struct memory_info));
+    CGvoid *memory = malloc(size + sizeof(MemoryInfo));
 
-    return push_memory_info(memory, size, file, line);
+    return pushMemoryInfo(memory, size, file, line);
 }
 
-void *cg_calloc_with_context(size_t count, size_t size, char *file, int line)
+CGvoid *cgCallocWithContext(CGuint count, CGuint size, CGi8 *file, CGu32 line)
 {
-    size_t total = count * size + sizeof(struct memory_info);
-    size_t per = total / count;
+    CGuint total = count * size + sizeof(MemoryInfo);
+    CGuint per = total / count;
     if (per * count < total) {
         per = per + 1;
     }
-    CG_ASSERT(per * count >= total);
-    void *memory = calloc(count, per);
+    CGASSERT(per * count >= total);
+    CGvoid *memory = calloc(count, per);
 
-    return push_memory_info(memory, size, file, line);
+    return pushMemoryInfo(memory, size, file, line);
 }
 
-void cg_free_with_context(void *p, size_t size, char *file, int line)
+CGvoid cgFreeWithContext(CGvoid *p, CGuint size, CGi8 *file, CGu32 line)
 {
-    struct memory_info *mi = (struct memory_info *)p - 1;
+    MemoryInfo *mi = (MemoryInfo *)p - 1;
 
-    CG_ASSERT(mi != 0);
+    CGASSERT(mi != 0);
 
     if (mi->size != size) {
         cgLogWithContext(file, line, CGLOG_LEVEL_WARN,

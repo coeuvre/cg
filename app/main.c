@@ -1,10 +1,10 @@
 #include <cg/core.h>
 #include <cg/game.h>
 
-#ifdef CG_PLATFORM_WINDOWS
+#ifdef CGPLATFORM_WINDOWS
 #include <Windows.h>
 #include <GL/gl.h>
-#elif CG_PLATFORM_MACOS
+#elif CGPLATFORM_MACOS
 #include <OpenGL/gl.h>
 #endif
 
@@ -14,17 +14,17 @@ struct game_state {
 
 static void init(void *userdata)
 {
-    CG_LOG(DEBUG, "INIT");
+    CGLOG(DEBUG, "INIT");
 }
 
 static void term(void *userdata)
 {
-    CG_LOG(DEBUG, "TERM");
+    CGLOG(DEBUG, "TERM");
 }
 
 static void update(void *userdata, float dt)
 {
-    CG_LOG(DEBUG, "UPDATE");
+    CGLOG(DEBUG, "UPDATE");
 
     struct game_state *state = userdata;
 
@@ -33,14 +33,14 @@ static void update(void *userdata, float dt)
         uint64_t nanosec =
             cg_counter2ns(current_count - state->last_counter);
         uint64_t millisec = cg_ns2ms(nanosec);
-        CG_LOG(DEBUG, "Frame Gap: %"PRId64"ms", millisec);
+        CGLOG(DEBUG, "Frame Gap: %"PRId64"ms", millisec);
     }
     state->last_counter = current_count;
 }
 
 static void render(void *userdata)
 {
-    CG_LOG(DEBUG, "RENDER");
+    CGLOG(DEBUG, "RENDER");
 
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);

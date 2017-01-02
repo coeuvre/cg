@@ -1,23 +1,23 @@
-#ifndef CG_CORE_UTILS_H
-#define CG_CORE_UTILS_H
+#ifndef CGCORE_UTILS_H
+#define CGCORE_UTILS_H
 
 #include <cg/core/env.h>
 #include <cg/core/prim.h>
 
 #include <assert.h>
 
-#if defined(CG_COMPILER_MSVC)
-    #define CG_EXPORT __declspec(dllexport)
-#elif defined(CG_COMPILER_GCC)
-    #define CG_EXPORT __attribute__((dllexport))
+#if defined(CGCOMPILER_MSVC)
+    #define CGEXPORT __declspec(dllexport)
+#elif defined(CGCOMPILER_GCC)
+    #define CGEXPORT __attribute__((dllexport))
 #else
     #error Unsupported compiler
 #endif
 
-#define CG_COUNT(a) (sizeof(a) / sizeof((a)[0]))
+#define CGCOUNT(a) (sizeof(a) / sizeof((a)[0]))
 
-#define CG_ASSERT(expr) assert(expr)
+#define CGASSERT(expr) assert(expr)
 
-#define CG_UNREACHABLE() CG_ASSERT(!"unreachable")
+#define CGUNREACHABLE() CGASSERT(!"unreachable")
 
-#endif /* CG_CORE_UTILS_H */
+#endif // CGCORE_UTILS_H

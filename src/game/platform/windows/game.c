@@ -7,7 +7,7 @@
 #include <GL/GL.h>
 #include <stdio.h>
 
-#define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
+#define WINDOW_CLASS_NAME "CGWINDOW_CLASS"
 
 static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
                                     WPARAM wparam, LPARAM lparam)
@@ -23,12 +23,12 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
 
     case WM_CLOSE:
         PostQuitMessage(0);
-        CG_LOG(DEBUG, "WM_CLOSE");
+        CGLOG(DEBUG, "WM_CLOSE");
         break;
 
     case WM_DESTROY:
-        CG_LOG(DEBUG, "WM_DESTROY");
-        CG_ASSERT(false);
+        CGLOG(DEBUG, "WM_DESTROY");
+        CGASSERT(false);
         break;
     }
 
@@ -52,18 +52,18 @@ static void do_one_frame(struct frame_context *context)
 
     uint64_t frame_start = cg_current_counter();
 
-    if (CG_GAME_UPDATE) {
-        CG_GAME_UPDATE(context->userdata, context->frametime);
+    if (CGGAME_UPDATE) {
+        CGGAME_UPDATE(context->userdata, context->frametime);
     }
 
-    if (CG_GAME_RENDER) {
-        CG_GAME_RENDER(context->userdata);
+    if (CGGAME_RENDER) {
+        CGGAME_RENDER(context->userdata);
     }
 
     uint64_t frame_end = cg_current_counter();
     uint64_t frame_cost = cg_counter2ns(frame_end - frame_start);
     frame_cost = cg_ns2ms(frame_cost);
-    CG_LOG(DEBUG, "Frame Cost: %"PRId64"ms", frame_cost);
+    CGLOG(DEBUG, "Frame Cost: %"PRId64"ms", frame_cost);
 
     SwapBuffers(context->hdc);
 
@@ -72,7 +72,7 @@ static void do_one_frame(struct frame_context *context)
 
     if (elapsed < frametime_ns) {
         uint32_t t = (uint32_t)cg_ns2ms(frametime_ns - elapsed);
-        CG_LOG(DEBUG, "Sleep for %d ms", t);
+        CGLOG(DEBUG, "Sleep for %d ms", t);
         Sleep(t);
     }
 }
@@ -98,7 +98,7 @@ void cg_run_game(void *userdata)
     wc.lpszClassName = WINDOW_CLASS_NAME;
 
     if (RegisterClassEx(&wc) == 0) {
-        CG_LOG(ERROR, "Failed to register window class.");
+        CGLOG(ERROR, "Failed to register window class.");
         return;
     }
 
@@ -112,7 +112,7 @@ void cg_run_game(void *userdata)
                                NULL);
 
     if (hwnd == 0) {
-        CG_LOG(ERROR, "Failed to create window.");
+        CGLOG(ERROR, "Failed to create window.");
         return;
     }
 
@@ -137,30 +137,30 @@ void cg_run_game(void *userdata)
     };
     int pfi = ChoosePixelFormat(hdc, &pfd);
     if (pfi == 0) {
-        CG_LOG(ERROR, "Failed to choose pixel format.");
+        CGLOG(ERROR, "Failed to choose pixel format.");
         return;
     }
 
     if (SetPixelFormat(hdc, pfi, &pfd) == FALSE) {
-        CG_LOG(ERROR, "Failed to set pixel format.");
+        CGLOG(ERROR, "Failed to set pixel format.");
         return;
     }
 
     HGLRC hglrc = wglCreateContext(hdc);
     if (hglrc == NULL) {
-        CG_LOG(ERROR, "Failed to create OpenGL context.");
+        CGLOG(ERROR, "Failed to create OpenGL context.");
         return;
     }
 
     if (wglMakeCurrent(hdc, hglrc) == FALSE) {
-        CG_LOG(ERROR, "Failed to make current OpenGL context.");
+        CGLOG(ERROR, "Failed to make current OpenGL context.");
         return;
     }
 
-    CG_LOG(INFO, "OpenGL Version: %s", glGetString(GL_VERSION));
+    CGLOG(INFO, "OpenGL Version: %s", glGetString(GL_VERSION));
 
-    if (CG_GAME_INIT) {
-        CG_GAME_INIT(userdata);
+    if (CGGAME_INIT) {
+        CGGAME_INIT(userdata);
     }
 
     ShowWindow(hwnd, SW_SHOW);
@@ -187,7 +187,7 @@ void cg_run_game(void *userdata)
         }
     }
 
-    if (CG_GAME_TERM) {
-        CG_GAME_TERM(userdata);
+    if (CGGAME_TERM) {
+        CGGAME_TERM(userdata);
     }
 }
