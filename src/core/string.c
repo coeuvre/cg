@@ -46,9 +46,9 @@ bool cg_cstr_is_equal(char *str1, char *str2)
     return ret;
 }
 
-CGsize cg_cstr_rfind(char *str, char ch)
+CGuint cg_cstr_rfind(char *str, char ch)
 {
-    CGsize ret = CGINVALID_INDEX;
+    CGuint ret = CGINVALID_INDEX;
 
     char *p = str;
 

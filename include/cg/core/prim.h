@@ -13,8 +13,14 @@ typedef int16_t  CGi16;
 typedef uint16_t CGu16;
 typedef int32_t  CGi32;
 typedef uint32_t CGu32;
-typedef size_t   CGsize;
+typedef int64_t  CGi64;
+typedef uint64_t CGu64;
+typedef intptr_t CGint;
+typedef size_t   CGuint;
 typedef intptr_t CGintptr;
+
+#define CGTRUE  true
+#define CGFALSE false
 
 #define CGINVALID_INDEX SIZE_MAX
 

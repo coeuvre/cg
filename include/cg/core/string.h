@@ -25,7 +25,7 @@ bool cg_cstr_is_equal(char *str1, char *str2);
  * Return the index of first occurrence of `ch` in `str`, or CGINVALID_INDEX
  * if the `ch` is not found.
  */
-CGsize cg_cstr_rfind(char *str, char ch);
+CGuint cg_cstr_rfind(char *str, char ch);
 
 /*
  * Copy string from `src` into `dst` with NULL terminated.
