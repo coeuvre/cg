@@ -2,41 +2,41 @@
 
 static void test_cstr_is_equal(void)
 {
-    CGASSERT(cg_cstr_is_equal("This is a test string in cg.",
+    cgAssert(cgIsCStrEqual("This is a test string in cg.",
                                "This is a test string in cg."));
 
-    CGASSERT(!cg_cstr_is_equal("This is a test string in cg,",
+    cgAssert(!cgIsCStrEqual("This is a test string in cg,",
                                 "This is a test string in cg."));
 
-    CGASSERT(!cg_cstr_is_equal("This is a test string",
+    cgAssert(!cgIsCStrEqual("This is a test string",
                                 "This is a test string in cg."));
 
-    CGASSERT(!cg_cstr_is_equal("In cg, this is a test string",
+    cgAssert(!cgIsCStrEqual("In cg, this is a test string",
                                 "This is a test string in cg."));
 }
 
 static void test_cstr_rfind(void)
 {
     char *str = "This is a test string in cg.";
-    size_t count = cg_cstr_count(str);
-    CGASSERT(count == 28);
+    size_t count = cgGetCStrCount(str);
+    cgAssert(count == 28);
 
     size_t p;
 
-    p = cg_cstr_rfind(str, 'z');
-    CGASSERT(p == CGINVALID_INDEX);
+    p = cgFindCStrReversed(str, 'z');
+    cgAssert(p == CG_INVALID_INDEX);
 
-    p = cg_cstr_rfind(str, '.');
-    CGASSERT(p == count - 1);
+    p = cgFindCStrReversed(str, '.');
+    cgAssert(p == count - 1);
 
-    p = cg_cstr_rfind(str, 'T');
-    CGASSERT(p == 0);
+    p = cgFindCStrReversed(str, 'T');
+    cgAssert(p == 0);
 
-    p = cg_cstr_rfind(str, 'a');
-    CGASSERT(p == 8);
+    p = cgFindCStrReversed(str, 'a');
+    cgAssert(p == 8);
 
-    p = cg_cstr_rfind(str, 'i');
-    CGASSERT(p == 22);
+    p = cgFindCStrReversed(str, 'i');
+    cgAssert(p == 22);
 }
 
 static void test_cstr_copy(void)
@@ -45,17 +45,17 @@ static void test_cstr_copy(void)
 
     {
         char buf[512];
-        size_t copied = cg_cstr_copy(buf, 512, str);
-        CGASSERT(copied == cg_cstr_count(str));
-        CGASSERT(cg_cstr_is_equal(buf, str));
+        size_t copied = cgCopyCStr(buf, 512, str);
+        cgAssert(copied == cgGetCStrCount(str));
+        cgAssert(cgIsCStrEqual(buf, str));
     }
 
     {
         char buf[10];
-        size_t copied = cg_cstr_copy(buf, 10, str);
-        CGASSERT(copied == 9);
-        CGASSERT(cg_cstr_count(buf) == 9);
-        CGASSERT(!cg_cstr_is_equal(buf, str));
+        size_t copied = cgCopyCStr(buf, 10, str);
+        cgAssert(copied == 9);
+        cgAssert(cgGetCStrCount(buf) == 9);
+        cgAssert(!cgIsCStrEqual(buf, str));
     }
 }
 

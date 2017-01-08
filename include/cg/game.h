@@ -1,16 +1,18 @@
-#ifndef CGGAME_H
-#define CGGAME_H
+#ifndef CG_GAME_H
+#define CG_GAME_H
 
-typedef void cg_game_init_fn(void *userdata);
-typedef void cg_game_update_fn(void *userdata, float dt);
-typedef void cg_game_render_fn(void *userdata);
-typedef void cg_game_term_fn(void *userdata);
+#include <cg/core.h>
 
-void cg_on_game_init(cg_game_init_fn *init);
-void cg_on_game_update(cg_game_update_fn *update);
-void cg_on_game_render(cg_game_render_fn *render);
-void cg_on_game_term(cg_game_term_fn *term);
+typedef void CGGameInitFn(void *userdata);
+typedef void CGGameUpdateFn(void *userdata, CGfloat dt);
+typedef void CGGameRenderFn(void *userdata);
+typedef void CGGameTermFn(void *userdata);
 
-void cg_run_game(void *userdata);
+void cgOnGameInit(CGGameInitFn *init);
+void cgOnGameUpdate(CGGameUpdateFn *update);
+void cgOnGameRender(CGGameRenderFn *render);
+void cgOnGameTerm(CGGameTermFn *term);
 
-#endif /* CGGAME_H */
+void cgRunGame(void *userdata);
+
+#endif /* CG_GAME_H */

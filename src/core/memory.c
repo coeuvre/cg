@@ -1,12 +1,12 @@
-#include <stdlib.h>
-
 #include <cg/core.h>
+
+#include <stdlib.h>
 
 typedef struct MemoryInfo MemoryInfo;
 struct MemoryInfo {
     CGi8 *file;
     CGu32 line;
-    CGuint size;
+    CGusize size;
     MemoryInfo *next;
     MemoryInfo *prev;
 };
@@ -16,12 +16,12 @@ struct MemoryInfo {
  */
 static MemoryInfo *HEAD;
 
-static CGvoid *pushMemoryInfo(CGvoid *memory, CGuint size,
+static void *pushMemoryInfo(void *memory, CGusize size,
                               CGi8 *file, CGu32 line)
 {
     MemoryInfo *mi = memory;
 
-    CGASSERT(mi != 0);
+    cgAssert(mi != 0);
 
     mi->file = file;
     mi->line = line;
@@ -38,34 +38,34 @@ static CGvoid *pushMemoryInfo(CGvoid *memory, CGuint size,
     return mi + 1;
 }
 
-CGvoid *cgAllocWithContext(CGuint size, CGi8 *file, CGu32 line)
+void *cgAllocWithContext(CGusize size, CGi8 *file, CGu32 line)
 {
-    CGvoid *memory = malloc(size + sizeof(MemoryInfo));
+    void *memory = malloc(size + sizeof(MemoryInfo));
 
     return pushMemoryInfo(memory, size, file, line);
 }
 
-CGvoid *cgCallocWithContext(CGuint count, CGuint size, CGi8 *file, CGu32 line)
+void *cgCallocWithContext(CGusize count, CGusize size, CGi8 *file, CGu32 line)
 {
-    CGuint total = count * size + sizeof(MemoryInfo);
-    CGuint per = total / count;
+    CGusize total = count * size + sizeof(MemoryInfo);
+    CGusize per = total / count;
     if (per * count < total) {
         per = per + 1;
     }
-    CGASSERT(per * count >= total);
-    CGvoid *memory = calloc(count, per);
+    cgAssert(per * count >= total);
+    void *memory = calloc(count, per);
 
     return pushMemoryInfo(memory, size, file, line);
 }
 
-CGvoid cgFreeWithContext(CGvoid *p, CGuint size, CGi8 *file, CGu32 line)
+void cgFreeWithContext(void *p, CGusize size, CGi8 *file, CGu32 line)
 {
     MemoryInfo *mi = (MemoryInfo *)p - 1;
 
-    CGASSERT(mi != 0);
+    cgAssert(mi != 0);
 
     if (mi->size != size) {
-        cgLogWithContext(file, line, CGLOG_LEVEL_WARN,
+        cgLogWithContext(file, line, CG_LOG_LEVEL_WARN,
                          "Memory corrupted: free memory with size %zu, "       \
                          "but it was allocated with size %zu.",
                          size, mi->size);

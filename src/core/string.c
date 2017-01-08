@@ -4,7 +4,7 @@
  * TODO: utf-8
  */
 
-size_t cg_cstr_size(char *str)
+size_t cgGetCStrSize(char *str)
 {
     size_t ret = 0;
 
@@ -15,7 +15,7 @@ size_t cg_cstr_size(char *str)
     return ret;
 }
 
-size_t cg_cstr_count(char *str)
+size_t cgGetCStrCount(char *str)
 {
     size_t ret = 0;
 
@@ -26,7 +26,7 @@ size_t cg_cstr_count(char *str)
     return ret;
 }
 
-bool cg_cstr_is_equal(char *str1, char *str2)
+bool cgIsCStrEqual(char *str1, char *str2)
 {
     bool ret = true;
 
@@ -46,13 +46,13 @@ bool cg_cstr_is_equal(char *str1, char *str2)
     return ret;
 }
 
-CGuint cg_cstr_rfind(char *str, char ch)
+CGindex cgFindCStrReversed(CGi8 *str, CGi8 ch)
 {
-    CGuint ret = CGINVALID_INDEX;
+    CGindex ret = CG_INVALID_INDEX;
 
-    char *p = str;
+    CGi8 *p = str;
 
-    char t;
+    CGi8 t;
     while ((t = *p++)) {
         if (t == ch) {
             ret = p - str - 1;
@@ -62,7 +62,7 @@ CGuint cg_cstr_rfind(char *str, char ch)
     return ret;
 }
 
-size_t cg_cstr_copy(char *dst, size_t dst_size, char *src)
+size_t cgCopyCStr(char *dst, size_t dst_size, char *src)
 {
     char *pd = dst;
     char *end = dst + dst_size;

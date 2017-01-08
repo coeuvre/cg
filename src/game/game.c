@@ -1,26 +1,26 @@
 #include "game/game.h"
 
-cg_game_init_fn *CGGAME_INIT;
-cg_game_update_fn *CGGAME_UPDATE;
-cg_game_render_fn *CGGAME_RENDER;
-cg_game_term_fn *CGGAME_TERM;
+CGGameInitFn *CG_GAME_INIT;
+CGGameUpdateFn *CG_GAME_UDPATE;
+CGGameRenderFn *CG_GAME_RENDER;
+CGGameTermFn *CG_GAME_TERM;
 
-void cg_on_game_init(cg_game_init_fn *init)
+void cgOnGameInit(CGGameInitFn *init)
 {
-    CGGAME_INIT = init;
+    CG_GAME_INIT = init;
 }
 
-void cg_on_game_update(cg_game_update_fn *update)
+void cgOnGameUpdate(CGGameUpdateFn *update)
 {
-    CGGAME_UPDATE = update;
+    CG_GAME_UDPATE = update;
 }
 
-void cg_on_game_render(cg_game_render_fn *render)
+void cgOnGameRender(CGGameRenderFn *render)
 {
-    CGGAME_RENDER = render;
+    CG_GAME_RENDER = render;
 }
 
-void cg_on_game_term(cg_game_term_fn *term)
+void cgOnGameTerm(CGGameTermFn *term)
 {
-    CGGAME_TERM = term;
+    CG_GAME_TERM = term;
 }

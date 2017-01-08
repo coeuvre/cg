@@ -54,20 +54,20 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 {
     float dt = 0.016667f;
 
-    uint64_t start = cg_current_counter();
+    uint64_t start = cgGetTick();
 
-    if (CGGAME_UPDATE) {
-        CGGAME_UPDATE(userdata, dt);
+    if (CG_GAME_UDPATE) {
+        CG_GAME_UDPATE(userdata, dt);
     }
 
-    if (CGGAME_RENDER) {
-        CGGAME_RENDER(userdata);
+    if (CG_GAME_RENDER) {
+        CG_GAME_RENDER(userdata);
     }
 
-    uint64_t end = cg_current_counter();
-    uint64_t frame_cost = cg_counter2ns(end - start);
-    frame_cost = cg_ns2ms(frame_cost);
-    CGLOG(DEBUG, "Frame cost: %"PRIu64"ms", frame_cost);
+    uint64_t end = cgGetTick();
+    uint64_t frame_cost = cgTickToNanosecond(end - start);
+    frame_cost = cgNanosecondToMillisecond(frame_cost);
+    cgLog(DEBUG, "Frame cost: %"PRIu64"ms", frame_cost);
 
     return kCVReturnSuccess;
 }
@@ -86,14 +86,14 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    if (CGGAME_INIT) {
-        CGGAME_INIT(userdata);
+    if (CG_GAME_INIT) {
+        CG_GAME_INIT(userdata);
     }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
-    if (CGGAME_TERM) {
-        CGGAME_TERM(userdata);
+    if (CG_GAME_TERM) {
+        CG_GAME_TERM(userdata);
     }
 }
 @end
@@ -119,7 +119,7 @@ static void create_menu(NSApplication *app)
     [app performSelector:@selector(setAppleMenu:) withObject:menu];
 }
 
-void cg_run_game(void *userdata)
+void cgRunGame(void *userdata)
 {
     NSApplication *app = [NSApplication sharedApplication];
     AppDelegate *delegate = [[AppDelegate alloc] init];

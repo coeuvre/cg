@@ -1,5 +1,4 @@
-#include <cg/core/log.h>
-#include <cg/core/utils.h>
+#include <cg/core.h>
 
 #include <stdio.h>
 
@@ -12,7 +11,7 @@
  *
  * TODO: Make this thread safe.
  */
-static CGLogLevel LEVEL = CGLOG_LEVEL_ERROR;
+static CGLogLevel LEVEL = CG_LOG_LEVEL_ERROR;
 
 static char *logLevelToString(CGLogLevel level)
 {
@@ -27,7 +26,7 @@ static char *logLevelToString(CGLogLevel level)
         "DEBUG",
     };
 
-    if (level >= 0 && level < CGCOUNT(t)) {
+    if (level >= 0 && level < cgArrayCount(t)) {
         return t[level];
     } else {
         return "DEFAULT";
@@ -44,10 +43,9 @@ CGLogLevel cgGetLogLevel(void)
     return LEVEL;
 }
 
-void cgLogWithContext(char *file, int line, CGLogLevel level,
-                      char *format, ...)
+void cgLogWithContext(CGi8 *file, CGu32 line, CGLogLevel level,
+                      CGi8 *format, ...)
 {
-    (void)level;
     va_list args;
     va_start(args, format);
     if (level <= LEVEL) {
@@ -62,7 +60,7 @@ void cgLogWithContext(char *file, int line, CGLogLevel level,
             vsnprintf(buf + written, MAX_CHAR_COUNT - written, format, args);
         }
 
-        cg_platform_log(buf);
+        cgPlatformLog(buf);
     }
     va_end(args);
 }

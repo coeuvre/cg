@@ -1,12 +1,11 @@
-#ifndef CGCORE_PRIM_H
-#define CGCORE_PRIM_H
+#ifndef CG_CORE_PRIM_H
+#define CG_CORE_PRIM_H
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <inttypes.h>
 
-typedef void     CGvoid;
 typedef bool     CGbool;
 typedef int8_t   CGi8;
 typedef uint8_t  CGu8;
@@ -16,13 +15,15 @@ typedef int32_t  CGi32;
 typedef uint32_t CGu32;
 typedef int64_t  CGi64;
 typedef uint64_t CGu64;
-typedef intptr_t CGint;
-typedef size_t   CGuint;
-typedef intptr_t CGintptr;
+typedef intptr_t CGisize;
+typedef size_t   CGusize;
+typedef intptr_t CGindex;
+typedef float    CGfloat;
+typedef double   CGdouble;
 
-#define CGTRUE  true
-#define CGFALSE false
+#define CG_TRUE  true
+#define CG_FALSE false
 
-#define CGINVALID_INDEX SIZE_MAX
+#define CG_INVALID_INDEX SIZE_MAX
 
-#endif // CGCORE_PRIM_H
+#endif // CG_CORE_PRIM_H

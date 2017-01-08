@@ -1,10 +1,10 @@
 #include <cg/core.h>
 #include <cg/game.h>
 
-#ifdef CGPLATFORM_WINDOWS
+#ifdef CG_PLATFORM_WINDOWS
 #include <Windows.h>
 #include <GL/gl.h>
-#elif CGPLATFORM_MACOS
+#elif CG_PLATFORM_MACOS
 #include <OpenGL/gl.h>
 #endif
 
@@ -14,33 +14,33 @@ struct game_state {
 
 static void init(void *userdata)
 {
-    CGLOG(DEBUG, "INIT");
+    cgLog(DEBUG, "INIT");
 }
 
 static void term(void *userdata)
 {
-    CGLOG(DEBUG, "TERM");
+    cgLog(DEBUG, "TERM");
 }
 
 static void update(void *userdata, float dt)
 {
-    CGLOG(DEBUG, "UPDATE");
+    cgLog(DEBUG, "UPDATE");
 
     struct game_state *state = userdata;
 
-    uint64_t current_count = cg_current_counter();
+    uint64_t current_count = cgGetTick();
     if (state->last_counter != 0) {
         uint64_t nanosec =
-            cg_counter2ns(current_count - state->last_counter);
-        uint64_t millisec = cg_ns2ms(nanosec);
-        CGLOG(DEBUG, "Frame Gap: %"PRId64"ms", millisec);
+            cgTickToNanosecond(current_count - state->last_counter);
+        uint64_t millisec = cgNanosecondToMillisecond(nanosec);
+        cgLog(DEBUG, "Frame Gap: %"PRId64"ms", millisec);
     }
     state->last_counter = current_count;
 }
 
 static void render(void *userdata)
 {
-    CGLOG(DEBUG, "RENDER");
+    cgLog(DEBUG, "RENDER");
 
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -55,16 +55,16 @@ static void render(void *userdata)
 
 int main(int argc, const char *argv[])
 {
-    cgSetLogLevel(CGLOG_LEVEL_DEBUG);
+    cgSetLogLevel(CG_LOG_LEVEL_DEBUG);
 
-    cg_on_game_init(&init);
-    cg_on_game_update(&update);
-    cg_on_game_render(&render);
-    cg_on_game_term(&term);
+    cgOnGameInit(&init);
+    cgOnGameUpdate(&update);
+    cgOnGameRender(&render);
+    cgOnGameTerm(&term);
 
     struct game_state state = {0};
 
-    cg_run_game(&state);
+    cgRunGame(&state);
 
     return 0;
 }

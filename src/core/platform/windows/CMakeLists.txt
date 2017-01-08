@@ -1,3 +1,3 @@
 add_library(core_platform
-    counter.c
+    utils.c
     log.c)

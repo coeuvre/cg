@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-void cg_platform_log(char *message)
+void cgPlatformLog(CGi8 *message)
 {
     printf("%s\n", message);
 }

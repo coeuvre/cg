@@ -1,4 +1,3 @@
-#include <cg/core/prim.h>
 #include "core/platform/log.h"
 
 #include <stdio.h>
@@ -9,7 +8,7 @@ static bool IS_INITIALIZED = false;
 #define OUTPUT_BUF_SIZE 4096
 static char OUTPUT_BUF[OUTPUT_BUF_SIZE];
 
-void cg_platform_log(char *message)
+void cgPlatformLog(CGi8 *message)
 {
     OutputDebugStringA(message);
     OutputDebugStringA("\n");
