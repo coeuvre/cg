@@ -4,14 +4,14 @@
 
 #include <Windows.h>
 
-uint64_t cgGetTick(void)
+uint64_t cgGetTicks(void)
 {
     LARGE_INTEGER counter;
     QueryPerformanceCounter(&counter);
     return counter.QuadPart;
 }
 
-uint64_t cgTickToNanosecond(uint64_t counter)
+uint64_t cgTicksToNanoseconds(uint64_t counter)
 {
     static uint64_t freq = 0;
 

@@ -54,7 +54,7 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 {
     float dt = 0.016667f;
 
-    uint64_t start = cgGetTick();
+    uint64_t start = cgGetTicks();
 
     if (CG_GAME_UDPATE) {
         CG_GAME_UDPATE(userdata, dt);
@@ -64,9 +64,9 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
         CG_GAME_RENDER(userdata);
     }
 
-    uint64_t end = cgGetTick();
-    uint64_t frame_cost = cgTickToNanosecond(end - start);
-    frame_cost = cgNanosecondToMillisecond(frame_cost);
+    uint64_t end = cgGetTicks();
+    uint64_t frame_cost = cgTicksToNanoseconds(end - start);
+    frame_cost = cgNanosecondsToMilliseconds(frame_cost);
     cgLog(DEBUG, "Frame cost: %"PRIu64"ms", frame_cost);
 
     return kCVReturnSuccess;

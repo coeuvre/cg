@@ -17,9 +17,9 @@ typedef int64_t  CGi64;
 typedef uint64_t CGu64;
 typedef intptr_t CGisize;
 typedef size_t   CGusize;
-typedef intptr_t CGindex;
-typedef float    CGfloat;
-typedef double   CGdouble;
+typedef CGisize  CGindex;
+typedef float    CGf32;
+typedef double   CGf64;
 
 #define CG_TRUE  true
 #define CG_FALSE false

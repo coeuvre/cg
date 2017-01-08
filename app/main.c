@@ -28,11 +28,11 @@ static void update(void *userdata, float dt)
 
     struct game_state *state = userdata;
 
-    uint64_t current_count = cgGetTick();
+    uint64_t current_count = cgGetTicks();
     if (state->last_counter != 0) {
         uint64_t nanosec =
-            cgTickToNanosecond(current_count - state->last_counter);
-        uint64_t millisec = cgNanosecondToMillisecond(nanosec);
+            cgTicksToNanoseconds(current_count - state->last_counter);
+        uint64_t millisec = cgNanosecondsToMilliseconds(nanosec);
         cgLog(DEBUG, "Frame Gap: %"PRId64"ms", millisec);
     }
     state->last_counter = current_count;

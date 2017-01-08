@@ -48,9 +48,9 @@ struct frame_context {
  */
 static void do_one_frame(struct frame_context *context)
 {
-    uint64_t frametime_ns = cgSecondToNanosecond(context->frametime);
+    uint64_t frametime_ns = cgSecondsToNanoseconds(context->frametime);
 
-    uint64_t frame_start = cgGetTick();
+    uint64_t frame_start = cgGetTicks();
 
     if (CG_GAME_UDPATE) {
         CG_GAME_UDPATE(context->userdata, context->frametime);
@@ -60,18 +60,18 @@ static void do_one_frame(struct frame_context *context)
         CG_GAME_RENDER(context->userdata);
     }
 
-    uint64_t frame_end = cgGetTick();
-    uint64_t frame_cost = cgTickToNanosecond(frame_end - frame_start);
-    frame_cost = cgNanosecondToMillisecond(frame_cost);
+    uint64_t frame_end = cgGetTicks();
+    uint64_t frame_cost = cgTicksToNanoseconds(frame_end - frame_start);
+    frame_cost = cgNanosecondsToMilliseconds(frame_cost);
     cgLog(DEBUG, "Frame Cost: %"PRId64"ms", frame_cost);
 
     SwapBuffers(context->hdc);
 
-    frame_end = cgGetTick();
-    uint64_t elapsed = cgTickToNanosecond(frame_end - frame_start);
+    frame_end = cgGetTicks();
+    uint64_t elapsed = cgTicksToNanoseconds(frame_end - frame_start);
 
     if (elapsed < frametime_ns) {
-        uint32_t t = (uint32_t)cgNanosecondToMillisecond(frametime_ns - elapsed);
+        uint32_t t = (uint32_t)cgNanosecondsToMilliseconds(frametime_ns - elapsed);
         cgLog(DEBUG, "Sleep for %d ms", t);
         Sleep(t);
     }

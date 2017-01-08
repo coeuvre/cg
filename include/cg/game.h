@@ -4,7 +4,7 @@
 #include <cg/core.h>
 
 typedef void CGGameInitFn(void *userdata);
-typedef void CGGameUpdateFn(void *userdata, CGfloat dt);
+typedef void CGGameUpdateFn(void *userdata, CGf32 dt);
 typedef void CGGameRenderFn(void *userdata);
 typedef void CGGameTermFn(void *userdata);
 

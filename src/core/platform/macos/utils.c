@@ -2,12 +2,12 @@
 
 #include <mach/mach_time.h>
 
-uint64_t cgGetTick(void)
+uint64_t cgGetTicks(void)
 {
     return mach_absolute_time();
 }
 
-uint64_t cgTickToNanosecond(uint64_t counter)
+uint64_t cgTicksToNanoseconds(uint64_t counter)
 {
     /*
      * This static variable means this function is NOT thread safe.
