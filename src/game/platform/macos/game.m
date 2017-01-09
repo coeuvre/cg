@@ -10,7 +10,7 @@
 #include "game/game.h"
 
 @interface CGOpenGLView : NSOpenGLView {
-    @public void *userdata;
+    @public void *userData;
 
     CVDisplayLinkRef display_link;
 }
@@ -57,11 +57,11 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
     uint64_t start = cgGetTicks();
 
     if (CG_GAME_UDPATE) {
-        CG_GAME_UDPATE(userdata, dt);
+        CG_GAME_UDPATE(userData, dt);
     }
 
     if (CG_GAME_RENDER) {
-        CG_GAME_RENDER(userdata);
+        CG_GAME_RENDER(userData);
     }
 
     uint64_t end = cgGetTicks();
@@ -79,7 +79,7 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 @end
 
 @interface AppDelegate : NSObject <NSApplicationDelegate> {
-    @public void *userdata;
+    @public void *userData;
 }
 
 @end
@@ -87,13 +87,13 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 @implementation AppDelegate
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     if (CG_GAME_INIT) {
-        CG_GAME_INIT(userdata);
+        CG_GAME_INIT(userData);
     }
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {
     if (CG_GAME_TERM) {
-        CG_GAME_TERM(userdata);
+        CG_GAME_TERM(userData);
     }
 }
 @end
@@ -119,18 +119,18 @@ static void create_menu(NSApplication *app)
     [app performSelector:@selector(setAppleMenu:) withObject:menu];
 }
 
-void cgRunGame(void *userdata)
+void cgRunGame(void *userData)
 {
     NSApplication *app = [NSApplication sharedApplication];
     AppDelegate *delegate = [[AppDelegate alloc] init];
-    delegate->userdata = userdata;
+    delegate->userData = userData;
     [app setDelegate:delegate];
 
     create_menu(app);
 
     [app setActivationPolicy:NSApplicationActivationPolicyRegular];
     CGOpenGLView *view = [[CGOpenGLView alloc] init];
-    view->userdata = userdata;
+    view->userData = userData;
     [view setWantsBestResolutionOpenGLSurface:YES];
 
     NSRect rect = NSMakeRect(0, 0, 800, 600);

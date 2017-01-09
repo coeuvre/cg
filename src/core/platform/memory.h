@@ -3,8 +3,8 @@
 
 #include <cg/core/prim.h>
 
-void *cgPlatformAlloc(size_t size);
-void *cgPlatformCalloc(size_t count, size_t size);
+void *cgPlatformAlloc(CGusize size);
+void *cgPlatformCalloc(CGusize count, CGusize size);
 void cgPlatformFree(void *p);
 
 #endif /* CG_PLATFORM_CORE_MEMORY_H */

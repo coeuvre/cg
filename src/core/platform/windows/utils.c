@@ -4,16 +4,16 @@
 
 #include <Windows.h>
 
-uint64_t cgGetTicks(void)
+CGu64 cgGetTicks(void)
 {
-    LARGE_INTEGER counter;
-    QueryPerformanceCounter(&counter);
-    return counter.QuadPart;
+    LARGE_INTEGER ticks;
+    QueryPerformanceCounter(&ticks);
+    return ticks.QuadPart;
 }
 
-uint64_t cgTicksToNanoseconds(uint64_t counter)
+CGu64 cgTicksToNanoseconds(CGu64 ticks)
 {
-    static uint64_t freq = 0;
+    static CGu64 freq = 0;
 
     if (freq == 0) {
         LARGE_INTEGER f;
@@ -21,7 +21,7 @@ uint64_t cgTicksToNanoseconds(uint64_t counter)
         freq = f.QuadPart;
     }
 
-    uint64_t nanosec = counter * 1000000000 / freq;
+    CGu64 nanosec = ticks * 1000000000 / freq;
 
     return nanosec;
 }

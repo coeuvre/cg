@@ -7,12 +7,12 @@
 #include <GL/GL.h>
 #include <stdio.h>
 
-#define WINDOW_CLASS_NAME "CGWINDOW_CLASS"
+#define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 
-static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
-                                    WPARAM wparam, LPARAM lparam)
+static LRESULT CALLBACK windowProc(HWND hwnd, UINT msg,
+                                   WPARAM wparam, LPARAM lparam)
 {
-    int32_t key = (int32_t)wparam;
+    CGi32 key = (CGi32)wparam;
 
     switch (msg) {
     case WM_KEYDOWN:
@@ -35,49 +35,49 @@ static LRESULT CALLBACK window_proc(HWND hwnd, UINT msg,
     return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-struct frame_context {
-    void *userdata;
+typedef struct FrameContext {
+    void *userData;
     HDC hdc;
-    int64_t last_frame_start;
-    float frametime;
-};
+    CGu64 lastFrameStart;
+    CGf32 frameTime;
+} FrameContext;
 
 /*
  * TODO: The gap between two frames is not stable even the frame cost is low.
  *       Find a way to fix this.
  */
-static void do_one_frame(struct frame_context *context)
+static void doOneFrame(FrameContext *context)
 {
-    uint64_t frametime_ns = cgSecondsToNanoseconds(context->frametime);
+    CGu64 frameTimeNS = cgSecondsToNanoseconds(context->frameTime);
 
-    uint64_t frame_start = cgGetTicks();
+    CGu64 frameStart = cgGetTicks();
 
     if (CG_GAME_UDPATE) {
-        CG_GAME_UDPATE(context->userdata, context->frametime);
+        CG_GAME_UDPATE(context->userData, context->frameTime);
     }
 
     if (CG_GAME_RENDER) {
-        CG_GAME_RENDER(context->userdata);
+        CG_GAME_RENDER(context->userData);
     }
 
-    uint64_t frame_end = cgGetTicks();
-    uint64_t frame_cost = cgTicksToNanoseconds(frame_end - frame_start);
-    frame_cost = cgNanosecondsToMilliseconds(frame_cost);
-    cgLog(DEBUG, "Frame Cost: %"PRId64"ms", frame_cost);
+    CGu64 frameEnd = cgGetTicks();
+    CGu64 frameCost = cgTicksToNanoseconds(frameEnd - frameStart);
+    frameCost = cgNanosecondsToMilliseconds(frameCost);
+    cgLog(DEBUG, "Frame Cost: %"PRId64"ms", frameCost);
 
     SwapBuffers(context->hdc);
 
-    frame_end = cgGetTicks();
-    uint64_t elapsed = cgTicksToNanoseconds(frame_end - frame_start);
+    frameEnd = cgGetTicks();
+    CGu64 elapsed = cgTicksToNanoseconds(frameEnd - frameStart);
 
-    if (elapsed < frametime_ns) {
-        uint32_t t = (uint32_t)cgNanosecondsToMilliseconds(frametime_ns - elapsed);
+    if (elapsed < frameTimeNS) {
+        CGu32 t = (CGu32)cgNanosecondsToMilliseconds(frameTimeNS - elapsed);
         cgLog(DEBUG, "Sleep for %d ms", t);
         Sleep(t);
     }
 }
 
-void cgRunGame(void *userdata)
+void cgRunGame(void *userData)
 {
     timeBeginPeriod(1);
 
@@ -92,7 +92,7 @@ void cgRunGame(void *userdata)
      * set for its style.
      */
     wc.style = CS_OWNDC;
-    wc.lpfnWndProc = window_proc;
+    wc.lpfnWndProc = windowProc;
     wc.hCursor = LoadCursor(0, IDC_ARROW);
     wc.hInstance = hinstance;
     wc.lpszClassName = WINDOW_CLASS_NAME;
@@ -160,16 +160,16 @@ void cgRunGame(void *userdata)
     cgLog(INFO, "OpenGL Version: %s", glGetString(GL_VERSION));
 
     if (CG_GAME_INIT) {
-        CG_GAME_INIT(userdata);
+        CG_GAME_INIT(userData);
     }
 
     ShowWindow(hwnd, SW_SHOW);
 
-    struct frame_context context = {
-        .userdata = userdata,
+    FrameContext context = {
+        .userData = userData,
         .hdc = hdc,
-        .last_frame_start = 0,
-        .frametime = 0.016667f,
+        .lastFrameStart = 0,
+        .frameTime = 0.016667f,
     };
 
     bool running = true;
@@ -183,11 +183,11 @@ void cgRunGame(void *userdata)
                 DispatchMessage(&msg);
             }
         } else {
-            do_one_frame(&context);
+            doOneFrame(&context);
         }
     }
 
     if (CG_GAME_TERM) {
-        CG_GAME_TERM(userdata);
+        CG_GAME_TERM(userData);
     }
 }

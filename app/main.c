@@ -8,37 +8,36 @@
 #include <OpenGL/gl.h>
 #endif
 
-struct game_state {
-    int64_t last_counter;
-};
+typedef struct GameState {
+    CGu64 lastTicks;
+} GameState;
 
-static void init(void *userdata)
+static void init(void *userData)
 {
     cgLog(DEBUG, "INIT");
 }
 
-static void term(void *userdata)
+static void term(void *userData)
 {
     cgLog(DEBUG, "TERM");
 }
 
-static void update(void *userdata, float dt)
+static void update(void *userData, float dt)
 {
     cgLog(DEBUG, "UPDATE");
 
-    struct game_state *state = userdata;
+    GameState *state = userData;
 
-    uint64_t current_count = cgGetTicks();
-    if (state->last_counter != 0) {
-        uint64_t nanosec =
-            cgTicksToNanoseconds(current_count - state->last_counter);
-        uint64_t millisec = cgNanosecondsToMilliseconds(nanosec);
-        cgLog(DEBUG, "Frame Gap: %"PRId64"ms", millisec);
+    CGu64 ticks = cgGetTicks();
+    if (state->lastTicks != 0) {
+        CGu64 ns = cgTicksToNanoseconds(ticks - state->lastTicks);
+        CGu64 ms = cgNanosecondsToMilliseconds(ns);
+        cgLog(DEBUG, "Frame Gap: %"PRId64"ms", ms);
     }
-    state->last_counter = current_count;
+    state->lastTicks = ticks;
 }
 
-static void render(void *userdata)
+static void render(void *userData)
 {
     cgLog(DEBUG, "RENDER");
 
@@ -62,7 +61,7 @@ int main(int argc, const char *argv[])
     cgOnGameRender(&render);
     cgOnGameTerm(&term);
 
-    struct game_state state = {0};
+    GameState state = {0};
 
     cgRunGame(&state);
 
