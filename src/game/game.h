@@ -8,4 +8,4 @@ extern CGGameUpdateFn *CG_GAME_UDPATE;
 extern CGGameRenderFn *CG_GAME_RENDER;
 extern CGGameTermFn *CG_GAME_TERM;
 
-#endif /* CG_GAME_GAME_H */
+#endif // CG_GAME_GAME_H

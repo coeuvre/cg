@@ -5,4 +5,4 @@
 
 void cgPlatformLog(CGi8 *message);
 
-#endif /* CG_CORE_PLATFORM_LOG_H */
+#endif // CG_CORE_PLATFORM_LOG_H

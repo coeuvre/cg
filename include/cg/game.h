@@ -15,4 +15,4 @@ void cgOnGameTerm(CGGameTermFn *term);
 
 void cgRunGame(void *userData);
 
-#endif /* CG_GAME_H */
+#endif // CG_GAME_H

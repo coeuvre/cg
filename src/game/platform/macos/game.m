@@ -3,7 +3,7 @@
 #endif
 
 #import <Cocoa/Cocoa.h>
-#include <crt_externs.h> /* for _NSGetProgname */
+#include <crt_externs.h> // for _NSGetProgname
 
 #include <cg/core.h>
 
@@ -32,7 +32,7 @@ static CVReturn display_link_callback(CVDisplayLinkRef display_link,
 @implementation CGOpenGLView
 - (void)prepareOpenGL
 {
-    /* Enable VSync */
+    // Enable VSync
     GLint swap_interval = 1;
     [[self openGLContext] setValues:&swap_interval
                        forParameter:NSOpenGLCPSwapInterval];

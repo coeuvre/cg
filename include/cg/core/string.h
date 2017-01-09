@@ -41,4 +41,4 @@ typedef struct CGStr {
     CGusize size;
 } CGStr;
 
-#endif /* CGCORE_STRING_H */
+#endif // CGCORE_STRING_H

@@ -8,4 +8,4 @@
 #include <cg/core/string.h>
 #include <cg/core/utils.h>
 
-#endif /* CG_CORE_H */
+#endif // CG_CORE_H
