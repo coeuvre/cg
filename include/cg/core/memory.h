@@ -12,10 +12,10 @@
 #define cgCalloc(size) cgCallocWithContext(size, __FILE__, __LINE__)
 #define cgFree(p, size) cgFreeWithContext(p, size, __FILE__, __LINE__)
 
-void *cgAllocWithContext(CGusize size, CGi8 *file, CGu32 line);
+void *cgAllocWithContext(CGuint size, char *file, CGu32 line);
 
-void *cgCallocWithContext(CGusize count, CGusize size, CGi8 *file, CGu32 line);
+void *cgCallocWithContext(CGuint count, CGuint size, char *file, CGu32 line);
 
-void cgFreeWithContext(void *p, CGusize size, CGi8 *file, CGu32 line);
+void cgFreeWithContext(void *p, CGuint size, char *file, CGu32 line);
 
 #endif // CG_CORE_MEMORY_H

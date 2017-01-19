@@ -3,6 +3,6 @@
 
 #include <cg/core/prim.h>
 
-void cgPlatformLog(CGi8 *message);
+void cgPlatformLog(char *message);
 
 #endif // CG_CORE_PLATFORM_LOG_H

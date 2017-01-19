@@ -43,8 +43,8 @@ CGLogLevel cgGetLogLevel(void)
     return LEVEL;
 }
 
-void cgLogWithContext(CGi8 *file, CGu32 line, CGLogLevel level,
-                      CGi8 *format, ...)
+void cgLogWithContext(char *file, CGu32 line, CGLogLevel level,
+                      char *format, ...)
 {
     va_list args;
     va_start(args, format);

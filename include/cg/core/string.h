@@ -6,17 +6,17 @@
 /*
  * Count the size of NULL terminated string `str` in bytes.
  */
-CGusize cgGetCStrSize(CGi8 *str);
+CGuint cgGetCStrSize(char *str);
 
 /*
  * Count the number of characters of NULL terminated string `str`.
  */
-CGusize cgGetCStrCount(CGi8 *str);
+CGuint cgGetCStrCount(char *str);
 
 /*
  * Test whether two strings `str1` and `str2` are equal.
  */
-CGbool cgIsCStrEqual(CGi8 *str1, CGi8 *str2);
+CGbool cgIsCStrEqual(char *str1, char *str2);
 
 /*
  * Given a string `str` with length `count` (not including the NULL character),
@@ -25,7 +25,7 @@ CGbool cgIsCStrEqual(CGi8 *str1, CGi8 *str2);
  * Return the index of first occurrence of `ch` in `str`, or CG_INVALID_INDEX
  * if the `ch` is not found.
  */
-CGindex cgFindCStrReversed(CGi8 *str, CGi8 ch);
+CGint cgFindCStrReversed(char *str, char ch);
 
 /*
  * Copy string from `src` into `dst` with NULL terminated.
@@ -33,12 +33,12 @@ CGindex cgFindCStrReversed(CGi8 *str, CGi8 ch);
  * Return the number of characters had copied (not including the terminating
  * NULL character).
  */
-size_t cgCopyCStr(char *dst, size_t dstSize, char *src);
+size_t cgCopyCStr(char *dst, CGuint dstSize, char *src);
 
 typedef struct CGStr {
     CGi8 *buf;
-    CGusize used;
-    CGusize size;
+    CGuint used;
+    CGuint size;
 } CGStr;
 
 #endif // CGCORE_STRING_H

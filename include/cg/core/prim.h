@@ -15,9 +15,8 @@ typedef int32_t  CGi32;
 typedef uint32_t CGu32;
 typedef int64_t  CGi64;
 typedef uint64_t CGu64;
-typedef intptr_t CGisize;
-typedef size_t   CGusize;
-typedef CGisize  CGindex;
+typedef intptr_t CGint;
+typedef size_t   CGuint;
 typedef float    CGf32;
 typedef double   CGf64;
 

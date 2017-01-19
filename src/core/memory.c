@@ -4,9 +4,9 @@
 
 typedef struct MemoryInfo MemoryInfo;
 struct MemoryInfo {
-    CGi8 *file;
+    char *file;
     CGu32 line;
-    CGusize size;
+    CGuint size;
     MemoryInfo *next;
     MemoryInfo *prev;
 };
@@ -16,8 +16,7 @@ struct MemoryInfo {
  */
 static MemoryInfo *HEAD;
 
-static void *pushMemoryInfo(void *memory, CGusize size,
-                              CGi8 *file, CGu32 line)
+static void *pushMemoryInfo(void *memory, CGuint size, char *file, CGu32 line)
 {
     MemoryInfo *mi = memory;
 
@@ -38,17 +37,17 @@ static void *pushMemoryInfo(void *memory, CGusize size,
     return mi + 1;
 }
 
-void *cgAllocWithContext(CGusize size, CGi8 *file, CGu32 line)
+void *cgAllocWithContext(CGuint size, char *file, CGu32 line)
 {
     void *memory = malloc(size + sizeof(MemoryInfo));
 
     return pushMemoryInfo(memory, size, file, line);
 }
 
-void *cgCallocWithContext(CGusize count, CGusize size, CGi8 *file, CGu32 line)
+void *cgCallocWithContext(CGuint count, CGuint size, char *file, CGu32 line)
 {
-    CGusize total = count * size + sizeof(MemoryInfo);
-    CGusize per = total / count;
+    CGuint total = count * size + sizeof(MemoryInfo);
+    CGuint per = total / count;
     if (per * count < total) {
         per = per + 1;
     }
@@ -58,7 +57,7 @@ void *cgCallocWithContext(CGusize count, CGusize size, CGi8 *file, CGu32 line)
     return pushMemoryInfo(memory, size, file, line);
 }
 
-void cgFreeWithContext(void *p, CGusize size, CGi8 *file, CGu32 line)
+void cgFreeWithContext(void *p, CGuint size, char *file, CGu32 line)
 {
     MemoryInfo *mi = (MemoryInfo *)p - 1;
 

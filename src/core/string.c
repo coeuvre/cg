@@ -4,9 +4,9 @@
  * TODO: utf-8
  */
 
-size_t cgGetCStrSize(char *str)
+CGuint cgGetCStrSize(char *str)
 {
-    size_t ret = 0;
+    CGuint ret = 0;
 
     while (*str++) {
         ++ret;
@@ -15,9 +15,9 @@ size_t cgGetCStrSize(char *str)
     return ret;
 }
 
-size_t cgGetCStrCount(char *str)
+CGuint cgGetCStrCount(char *str)
 {
-    size_t ret = 0;
+    CGuint ret = 0;
 
     while (*str++) {
         ++ret;
@@ -26,9 +26,9 @@ size_t cgGetCStrCount(char *str)
     return ret;
 }
 
-bool cgIsCStrEqual(char *str1, char *str2)
+CGbool cgIsCStrEqual(char *str1, char *str2)
 {
-    bool ret = true;
+    CGbool ret = true;
 
     char *p1 = str1, *p2 = str2;
     char ch1, ch2;
@@ -46,13 +46,13 @@ bool cgIsCStrEqual(char *str1, char *str2)
     return ret;
 }
 
-CGindex cgFindCStrReversed(CGi8 *str, CGi8 ch)
+CGint cgFindCStrReversed(char *str, char ch)
 {
-    CGindex ret = CG_INVALID_INDEX;
+    CGint ret = CG_INVALID_INDEX;
 
-    CGi8 *p = str;
+    char *p = str;
 
-    CGi8 t;
+    char t;
     while ((t = *p++)) {
         if (t == ch) {
             ret = p - str - 1;
@@ -62,7 +62,7 @@ CGindex cgFindCStrReversed(CGi8 *str, CGi8 ch)
     return ret;
 }
 
-size_t cgCopyCStr(char *dst, size_t dst_size, char *src)
+CGuint cgCopyCStr(char *dst, CGuint dst_size, char *src)
 {
     char *pd = dst;
     char *end = dst + dst_size;
