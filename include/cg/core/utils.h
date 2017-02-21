@@ -1,8 +1,8 @@
 #ifndef CG_CORE_UTILS_H
 #define CG_CORE_UTILS_H
 
-#include <cg/core/env.h>
-#include <cg/core/prim.h>
+#include <cg/core/Env.h>
+#include <cg/core/Prim.h>
 
 #include <assert.h>
 

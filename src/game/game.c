@@ -1,4 +1,4 @@
-#include "game/game.h"
+#include "game/Game.h"
 
 CGGameInitFn *CG_GAME_INIT;
 CGGameUpdateFn *CG_GAME_UDPATE;

@@ -1,3 +1,3 @@
-add_library(core_platform
-    utils.c
-    log.c)
+add_library(CGCorePlatform
+    Utils.c
+    Log.c)

@@ -1,8 +1,8 @@
 add_subdirectory(platform)
 
-add_library(core
-    log.c
-    memory.c
-    string.c)
+add_library(CGCore
+    Log.c
+    Memory.c
+    String.c)
 
-target_link_libraries(core core_platform)
+target_link_libraries(CGCore CGCorePlatform)

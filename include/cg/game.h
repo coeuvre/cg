@@ -1,7 +1,7 @@
 #ifndef CG_GAME_H
 #define CG_GAME_H
 
-#include <cg/core.h>
+#include <cg/Core.h>
 
 typedef void CGGameInitFn(void *userData);
 typedef void CGGameUpdateFn(void *userData, CGf32 dt);

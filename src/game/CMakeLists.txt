@@ -1,6 +1,6 @@
 add_subdirectory(platform)
 
-add_library(game
+add_library(CGGame
     game.c)
 
-target_link_libraries(game game_platform)
+target_link_libraries(CGGame CGGamePlatform)

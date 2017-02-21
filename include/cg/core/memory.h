@@ -1,7 +1,7 @@
 #ifndef CG_CORE_MEMORY_H
 #define CG_CORE_MEMORY_H
 
-#include <cg/core/prim.h>
+#include <cg/core/Prim.h>
 
 #define CG_KB(x) ((x) * 1024LL)
 #define CG_MB(x) (CG_KB(x) * 1024LL)

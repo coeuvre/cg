@@ -1,4 +1,4 @@
-#include <cg/core.h>
+#include <cg/Core.h>
 
 #include <stdlib.h>
 

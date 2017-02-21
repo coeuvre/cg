@@ -1,11 +1,11 @@
 #ifndef CG_CORE_H
 #define CG_CORE_H
 
-#include <cg/core/env.h>
-#include <cg/core/prim.h>
-#include <cg/core/memory.h>
-#include <cg/core/log.h>
-#include <cg/core/string.h>
-#include <cg/core/utils.h>
+#include <cg/core/Env.h>
+#include <cg/core/Prim.h>
+#include <cg/core/Memory.h>
+#include <cg/core/Log.h>
+#include <cg/core/String.h>
+#include <cg/core/Utils.h>
 
 #endif // CG_CORE_H

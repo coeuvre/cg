@@ -5,9 +5,9 @@
 #import <Cocoa/Cocoa.h>
 #include <crt_externs.h> // for _NSGetProgname
 
-#include <cg/core.h>
+#include <cg/Core.h>
 
-#include "game/game.h"
+#include "game/Game.h"
 
 @interface CGOpenGLView : NSOpenGLView {
     @public void *userData;

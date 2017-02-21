@@ -3,7 +3,7 @@
 
 #include <stdarg.h>
 
-#include <cg/core/prim.h>
+#include <cg/core/Prim.h>
 
 typedef enum CGLogLevel {
     CG_LOG_LEVEL_DEFAULT = -1,  // default (or last) loglevel

@@ -1,8 +1,8 @@
-#include <cg/core.h>
+#include <cg/Core.h>
 
 #include <stdio.h>
 
-#include "core/platform/log.h"
+#include "core/platform/Log.h"
 
 /*
  * Log level

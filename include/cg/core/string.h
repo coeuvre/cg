@@ -1,7 +1,7 @@
 #ifndef CGCORE_STRING_H
 #define CGCORE_STRING_H
 
-#include <cg/core/prim.h>
+#include <cg/core/Prim.h>
 
 /*
  * Count the size of NULL terminated string `str` in bytes.

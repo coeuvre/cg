@@ -1,7 +1,7 @@
 #include <cg/core.h>
 #include <cg/game.h>
 
-#include "game/game.h"
+#include "game/Game.h"
 
 #include <Windows.h>
 #include <GL/GL.h>
