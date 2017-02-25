@@ -3,15 +3,15 @@
 
 #include <cg/Core.h>
 
-typedef void CGGameInitFn(void *userData);
-typedef void CGGameUpdateFn(void *userData, CGf32 dt);
-typedef void CGGameRenderFn(void *userData);
-typedef void CGGameTermFn(void *userData);
+typedef void CGInitGameFn(void *userData);
+typedef void CGUpdateGameFn(void *userData, CGf32 dt);
+typedef void CGRenderGameFn(void *userData);
+typedef void CGTermGameFn(void *userData);
 
-void cgOnGameInit(CGGameInitFn *init);
-void cgOnGameUpdate(CGGameUpdateFn *update);
-void cgOnGameRender(CGGameRenderFn *render);
-void cgOnGameTerm(CGGameTermFn *term);
+void cgOnInitGame(CGInitGameFn *init);
+void cgOnUpdateGame(CGUpdateGameFn *update);
+void cgOnRenderGame(CGRenderGameFn *render);
+void cgOnTermGame(CGTermGameFn *term);
 
 void cgRunGame(void *userData);
 

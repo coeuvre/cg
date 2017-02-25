@@ -5,7 +5,6 @@
 
 #include <Windows.h>
 #include <GL/GL.h>
-#include <stdio.h>
 
 #define WINDOW_CLASS_NAME "CG_WINDOW_CLASS"
 
@@ -17,18 +16,12 @@ static LRESULT CALLBACK windowProc(HWND hwnd, UINT msg,
     switch (msg) {
     case WM_KEYDOWN:
         if (key == VK_ESCAPE) {
-            PostQuitMessage(0);
+            DestroyWindow(hwnd);
         }
         break;
 
-    case WM_CLOSE:
-        PostQuitMessage(0);
-        cgLog(DEBUG, "WM_CLOSE");
-        break;
-
     case WM_DESTROY:
-        cgLog(DEBUG, "WM_DESTROY");
-        cgAssert(false);
+        PostQuitMessage(0);
         break;
 
     default: break;
@@ -54,12 +47,12 @@ static void doOneFrame(FrameContext *context)
 
     CGu64 frameStart = cgGetTicks();
 
-    if (CG_GAME_UDPATE) {
-        CG_GAME_UDPATE(context->userData, context->frameTime);
+    if (CG_UPDATE_GAME) {
+        CG_UPDATE_GAME(context->userData, context->frameTime);
     }
 
-    if (CG_GAME_RENDER) {
-        CG_GAME_RENDER(context->userData);
+    if (CG_RENDER_GAME) {
+        CG_RENDER_GAME(context->userData);
     }
 
     CGu64 frameEnd = cgGetTicks();
@@ -161,8 +154,8 @@ void cgRunGame(void *userData)
 
     cgLog(INFO, "OpenGL Version: %s", glGetString(GL_VERSION));
 
-    if (CG_GAME_INIT) {
-        CG_GAME_INIT(userData);
+    if (CG_INIT_GAME) {
+        CG_INIT_GAME(userData);
     }
 
     ShowWindow(hwnd, SW_SHOW);
@@ -189,7 +182,7 @@ void cgRunGame(void *userData)
         }
     }
 
-    if (CG_GAME_TERM) {
-        CG_GAME_TERM(userData);
+    if (CG_TERM_GAME) {
+        CG_TERM_GAME(userData);
     }
 }
