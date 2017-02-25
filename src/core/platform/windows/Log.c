@@ -8,7 +8,7 @@ static bool IS_INITIALIZED = false;
 #define OUTPUT_BUF_SIZE 4096
 static char OUTPUT_BUF[OUTPUT_BUF_SIZE];
 
-void cgPlatformLog(CGi8 *message)
+void cgPlatformLog(char *message)
 {
     OutputDebugStringA(message);
     OutputDebugStringA("\n");

@@ -11,7 +11,7 @@
  *
  * TODO: Make this thread safe.
  */
-static CGLogLevel LEVEL = kCGLogLevelError;
+static CGLogLevel LEVEL = CG_LOG_LEVEL_ERROR;
 
 static char *logLevelToString(CGLogLevel level)
 {

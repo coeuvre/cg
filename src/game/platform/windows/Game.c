@@ -30,6 +30,8 @@ static LRESULT CALLBACK windowProc(HWND hwnd, UINT msg,
         cgLog(DEBUG, "WM_DESTROY");
         cgAssert(false);
         break;
+
+    default: break;
     }
 
     return DefWindowProc(hwnd, msg, wparam, lparam);

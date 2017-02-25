@@ -64,7 +64,7 @@ void cgFreeWithContext(void *p, CGuint size, char *file, CGu32 line)
     cgAssert(mi != 0);
 
     if (mi->size != size) {
-        cgLogWithContext(file, line, kCGLogLevelWarn,
+        cgLogWithContext(file, line, CG_LOG_LEVEL_WARN,
                          "Memory corrupted: free memory with size %zu, "       \
                          "but it was allocated with size %zu.",
                          size, mi->size);
